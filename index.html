@@ -1,1 +1,112 @@
-The requested file reference is not currently visible. Use files.search or files.list to rediscover the file, then retry with a returned ref_id or file_id.
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BasketAI — твой личный помощник по баскетболу.">
+  <title>BasketAI 🏀</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#111827,#172554);color:#fff;min-height:100vh}
+    .container{max-width:900px;margin:auto;padding:25px}
+    header{text-align:center;padding:30px 10px}
+    .logo{font-size:60px}
+    h1{font-size:45px;margin:10px 0}
+    .subtitle{color:#cbd5e1;font-size:18px}
+    .card{background:rgba(255,255,255,.1);border-radius:22px;padding:22px;margin-top:20px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    .buttons{display:flex;flex-wrap:wrap;gap:10px}
+    button{border:0;border-radius:12px;padding:13px 18px;background:#f97316;color:#fff;font-weight:bold;cursor:pointer;transition:.2s}
+    button:hover{background:#ea580c;transform:scale(1.03)}
+    .chat{height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+    .message{max-width:80%;padding:14px;border-radius:17px;line-height:1.5;white-space:normal}
+    .bot{align-self:flex-start;background:#334155}
+    .user{align-self:flex-end;background:#f97316}
+    .input-area{display:flex;gap:10px;margin-top:15px}
+    input{flex:1;padding:15px;border-radius:12px;border:1px solid #475569;background:#0f172a;color:#fff;font-size:16px;outline:none}
+    input:focus{border-color:#f97316}
+    .footer{text-align:center;color:#94a3b8;margin-top:20px}
+    @media(max-width:600px){.container{padding:14px}.logo{font-size:48px}h1{font-size:36px}.input-area{flex-direction:column}.message{max-width:90%}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">🏀🤖</div>
+    <h1>BasketAI</h1>
+    <p class="subtitle">Твой личный помощник по баскетболу</p>
+  </header>
+
+  <div class="card">
+    <h2>⚡ Быстрые вопросы</h2>
+    <div class="buttons">
+      <button onclick="ask('Как улучшить дриблинг?')">🏀 Дриблинг</button>
+      <button onclick="ask('Дай мне тренировку')">💪 Тренировка</button>
+      <button onclick="ask('Объясни позиции')">📚 Позиции</button>
+      <button onclick="ask('Как улучшить бросок?')">🎯 Бросок</button>
+      <button onclick="ask('Объясни правила')">📖 Правила</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="chat" class="chat">
+      <div class="message bot">Привет! 👋<br><br>Я BasketAI 🏀🤖<br>Задай мне вопрос о баскетболе!</div>
+    </div>
+    <div class="input-area">
+      <input id="input" type="text" placeholder="Например: как улучшить бросок?" autocomplete="off">
+      <button onclick="sendMessage()">Отправить</button>
+    </div>
+  </div>
+
+  <div class="footer">BasketAI 🏀 — создано тобой</div>
+</div>
+
+<script>
+const chat=document.getElementById("chat");
+const input=document.getElementById("input");
+
+function addMessage(text,type){
+  const message=document.createElement("div");
+  message.className="message "+type;
+  message.innerHTML=text.replace(/\n/g,"<br>");
+  chat.appendChild(message);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function ask(question){input.value=question;sendMessage();}
+
+function getAnswer(question){
+  const q=question.toLowerCase();
+
+  if(q.includes("дриблинг")||q.includes("дрибл"))
+    return "🏀 Как улучшить дриблинг:\n\n1. 2 минуты — правая рука.\n2. 2 минуты — левая рука.\n3. 3 минуты — кроссовер.\n4. 3 минуты — ведение между ног.\n5. 5 минут — движение с мячом.\n\nСначала тренируй контроль мяча, затем увеличивай скорость.";
+
+  if(q.includes("бросок")||q.includes("брос"))
+    return "🎯 Как улучшить бросок:\n\n• Держи правильную стойку.\n• Направляй локоть к кольцу.\n• Работай кистью.\n• Следи за траекторией.\n• Начинай с близкого расстояния.\n\nПосле этого постепенно увеличивай дистанцию.";
+
+  if(q.includes("трениров"))
+    return "💪 Тренировка на сегодня:\n\n10 минут — разминка.\n10 минут — дриблинг.\n15 минут — броски.\n5 минут — передачи.\n5 минут — свободные броски.\n\nДелай перерывы и прекращай тренировку, если появляется боль.";
+
+  if(q.includes("позици")||q.includes("позиция"))
+    return "🏀 Позиции в баскетболе:\n\n1️⃣ PG — разыгрывающий.\n2️⃣ SG — атакующий защитник.\n3️⃣ SF — лёгкий форвард.\n4️⃣ PF — тяжёлый форвард.\n5️⃣ C — центровой.\n\nУ каждой позиции свои задачи.";
+
+  if(q.includes("правил"))
+    return "📚 Я могу объяснить тебе:\n\n• пробежку;\n• двойное ведение;\n• фолы;\n• аут;\n• правило 3 секунд;\n• правило 24 секунд;\n• штрафные броски.\n\nНапиши название правила.";
+
+  if(q.includes("привет")||q.includes("здравств"))
+    return "🏀 Привет!\n\nЯ BasketAI 🤖\n\nЯ могу помочь тебе с баскетболом. Спроси меня про дриблинг, броски, тренировки, позиции или правила.";
+
+  return "🏀 Я пока не понял вопрос.\n\nПопробуй спросить:\n\n• Как улучшить дриблинг?\n• Как улучшить бросок?\n• Дай тренировку.\n• Объясни позиции.\n• Объясни правила.";
+}
+
+function sendMessage(){
+  const question=input.value.trim();
+  if(!question)return;
+  addMessage(question,"user");
+  input.value="";
+  setTimeout(()=>addMessage(getAnswer(question),"bot"),400);
+}
+
+input.addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage();});
+</script>
+</body>
+</html>
