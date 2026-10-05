@@ -237,7 +237,7 @@ async function sendMessage(){
     addMessage("assistant",data.answer);
   }catch(error){
     hideTyping();
-    addMessage("assistant","❌ Ошибка подключения к AI.\n\n"+error.message+"\n\nЕсли Worker ещё показывает Hello World, замени его код на код Worker, который я дал тебе.");
+    addMessage("assistant","❌ Не удалось получить ответ от AI.\n\n"+error.message);
   }finally{
     sendButton.disabled=false;input.focus();
   }
