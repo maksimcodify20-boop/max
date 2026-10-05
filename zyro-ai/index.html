@@ -1,6 +1,1018 @@
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Zyro AI</title><style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#fff;height:100vh;display:flex;overflow:hidden;background:radial-gradient(circle at 15% 20%,#7c3aed55,transparent 30%),radial-gradient(circle at 85% 80%,#2563eb55,transparent 30%),linear-gradient(135deg,#070914,#11152b,#090b18)}.side{width:250px;padding:20px;background:#0f1123e8;border-right:1px solid #8b5cf655}.logo{font-size:25px;font-weight:bold;margin-bottom:25px;background:linear-gradient(90deg,#c084fc,#6366f1,#22d3ee);-webkit-background-clip:text;color:transparent}.new{width:100%;padding:13px;border:1px solid #8b5cf688;border-radius:12px;background:#8b5cf633;color:#fff;cursor:pointer}.main{flex:1;display:flex;flex-direction:column}.head{padding:20px;border-bottom:1px solid #8b5cf644;font-weight:bold}.chat{flex:1;overflow:auto;padding:30px}.welcome{text-align:center;margin-top:100px}.welcome h1{font-size:44px;background:linear-gradient(90deg,#c084fc,#818cf8,#22d3ee);-webkit-background-clip:text;color:transparent}.msg{max-width:800px;margin:20px auto;padding:17px 20px;border-radius:16px;line-height:1.6;white-space:pre-wrap}.user{background:linear-gradient(135deg,#4f46e5,#7c3aed,#9333ea)}.ai{background:#171d3eee;border:1px solid #8b5cf655}.name{font-weight:bold;color:#c4b5fd;margin-bottom:7px}.area{padding:20px;border-top:1px solid #8b5cf644}.box{max-width:800px;margin:auto;display:flex;padding:6px;border:1px solid #8b5cf688;border-radius:16px;background:#141832}.input{flex:1;background:transparent;border:0;outline:0;color:#fff;padding:13px;font-size:16px}.send{width:48px;border:0;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#6366f1,#06b6d4);color:white;font-size:20px;cursor:pointer}.foot{text-align:center;color:#777d8d;font-size:12px;margin-top:10px}@media(max-width:700px){.side{display:none}.welcome h1{font-size:30px}}
-</style></head><body><aside class="side"><div class="logo">⚡ Zyro AI</div><button class="new" onclick="newChat()">＋ Новый чат</button></aside><main class="main"><header class="head">⚡ Zyro AI</header><section class="chat" id="chat"><div class="welcome" id="welcome"><h1>Чем я могу помочь?</h1><p>Задай свой вопрос Zyro AI 👇</p></div></section><div class="area"><div class="box"><input class="input" id="input" placeholder="Напиши сообщение..." autocomplete="off"><button class="send" onclick="send()">➤</button></div><div class="foot">Zyro AI — твой AI-помощник</div></div></main><script>
-const input=document.getElementById("input"),chat=document.getElementById("chat");input.addEventListener("keydown",e=>{if(e.key==="Enter")send()});function add(n,t,c){let m=document.createElement("div"),a=document.createElement("div"),b=document.createElement("div");m.className="msg "+c;a.className="name";a.textContent=n;b.textContent=t;m.append(a,b);chat.appendChild(m);chat.scrollTop=chat.scrollHeight}function send(){let t=input.value.trim();if(!t)return;let w=document.getElementById("welcome");if(w)w.style.display="none";add("Ты",t,"user");input.value="";setTimeout(()=>add("Zyro AI",answer(t),"ai"),400)}function answer(t){let q=t.toLowerCase();if(q.includes("привет")||q.includes("хай"))return"Привет! 👋 Я Zyro AI. Чем могу помочь?";if(q.includes("кто ты"))return"Я Zyro AI — твой виртуальный AI-помощник ⚡";if(q.includes("html"))return"HTML создаёт структуру сайта.";if(q.includes("css"))return"CSS отвечает за дизайн сайта 🎨";if(q.includes("javascript")||q.includes("js"))return"JavaScript добавляет сайту интерактивность ⚡";if(q.includes("спасибо"))return"Пожалуйста! 😎";if(q.includes("помоги")||q.includes("помощь"))return"Конечно! Напиши, что тебе нужно сделать.";return"Я пока демо-версия Zyro AI 🤖. Для ответов на любые вопросы нужен настоящий AI через сервер и API."}function newChat(){chat.innerHTML='<div class="welcome" id="welcome"><h1>Чем я могу помочь?</h1><p>Задай свой вопрос Zyro AI 👇</p></div>';input.value=""}
-</script></body></html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Zyro AI</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#0b1020;
+  --panel:#11182b;
+  --panel2:#151e34;
+  --border:rgba(255,255,255,.09);
+  --text:#f7f9ff;
+  --muted:#8f9ab5;
+  --accent:#7c5cff;
+  --accent2:#00c6ff;
+  --user:#6754e8;
+}
+
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(124,92,255,.18),transparent 28%),
+    radial-gradient(circle at 80% 80%,rgba(0,198,255,.12),transparent 28%),
+    var(--bg);
+  color:var(--text);
+  height:100vh;
+  overflow:hidden;
+}
+
+button,
+textarea{
+  font-family:inherit;
+}
+
+.app{
+  height:100vh;
+  display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  width:270px;
+  background:rgba(9,13,26,.92);
+  border-right:1px solid var(--border);
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  backdrop-filter:blur(20px);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-size:20px;
+  font-weight:800;
+}
+
+.logo-icon{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 8px 30px rgba(124,92,255,.35);
+}
+
+.new-chat{
+  border:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(0,198,255,.08));
+  color:white;
+  border-radius:13px;
+  padding:13px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:700;
+  transition:.2s;
+}
+
+.new-chat:hover{
+  transform:translateY(-1px);
+  border-color:rgba(124,92,255,.5);
+}
+
+.history-title{
+  color:var(--muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+
+.history{
+  flex:1;
+  overflow:auto;
+}
+
+.chat-item{
+  padding:11px 12px;
+  border-radius:10px;
+  color:#c8d0e4;
+  font-size:14px;
+  margin-top:6px;
+  cursor:pointer;
+}
+
+.chat-item:hover{
+  background:rgba(255,255,255,.06);
+}
+
+.bottom{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* MAIN */
+
+.main{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.header{
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 26px;
+  border-bottom:1px solid var(--border);
+  background:rgba(11,16,32,.7);
+  backdrop-filter:blur(18px);
+}
+
+.header-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#82f7ae;
+  font-size:12px;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#39e879;
+  box-shadow:0 0 12px #39e879;
+}
+
+/* CHAT */
+
+.chat{
+  flex:1;
+  overflow-y:auto;
+  padding:35px 20px 180px;
+}
+
+.chat-inner{
+  width:min(900px,100%);
+  margin:auto;
+}
+
+.welcome{
+  min-height:55vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.welcome-icon{
+  width:80px;
+  height:80px;
+  border-radius:24px;
+  display:grid;
+  place-items:center;
+  font-size:38px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:
+    0 15px 60px rgba(124,92,255,.35);
+  margin-bottom:25px;
+}
+
+.welcome h1{
+  font-size:42px;
+  margin-bottom:12px;
+}
+
+.welcome p{
+  color:var(--muted);
+  max-width:600px;
+  line-height:1.6;
+}
+
+.suggestions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  width:min(700px,100%);
+  margin-top:30px;
+}
+
+.suggestion{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  color:#dce2f3;
+  border-radius:14px;
+  padding:15px;
+  text-align:left;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.suggestion:hover{
+  background:rgba(255,255,255,.08);
+  transform:translateY(-2px);
+}
+
+/* MESSAGES */
+
+.message{
+  display:flex;
+  gap:13px;
+  margin:22px 0;
+  animation:appear .25s ease;
+}
+
+@keyframes appear{
+  from{
+    opacity:0;
+    transform:translateY(8px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+.avatar{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:16px;
+  font-weight:700;
+}
+
+.message.ai .avatar{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+
+.message.user .avatar{
+  background:#28324b;
+}
+
+.bubble{
+  max-width:calc(100% - 55px);
+  line-height:1.7;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.message.user .bubble{
+  background:rgba(103,84,232,.18);
+  border:1px solid rgba(103,84,232,.25);
+  padding:12px 15px;
+  border-radius:16px;
+}
+
+/* TYPING */
+
+.typing{
+  display:flex;
+  gap:5px;
+  align-items:center;
+  padding:10px 0;
+}
+
+.typing span{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#aab5d1;
+  animation:bounce 1.2s infinite;
+}
+
+.typing span:nth-child(2){
+  animation-delay:.15s;
+}
+
+.typing span:nth-child(3){
+  animation-delay:.3s;
+}
+
+@keyframes bounce{
+  0%,60%,100%{
+    transform:translateY(0);
+    opacity:.4;
+  }
+  30%{
+    transform:translateY(-5px);
+    opacity:1;
+  }
+}
+
+/* INPUT */
+
+.input-area{
+  position:fixed;
+  left:270px;
+  right:0;
+  bottom:0;
+  padding:20px 25px 24px;
+  background:linear-gradient(
+    transparent,
+    rgba(11,16,32,.96) 35%
+  );
+}
+
+.composer{
+  width:min(900px,100%);
+  margin:auto;
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  padding:10px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:19px;
+  background:rgba(20,27,47,.95);
+  box-shadow:
+    0 15px 50px rgba(0,0,0,.3),
+    inset 0 1px rgba(255,255,255,.05);
+}
+
+textarea{
+  flex:1;
+  resize:none;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:white;
+  padding:11px;
+  min-height:48px;
+  max-height:150px;
+  font-size:15px;
+  line-height:1.5;
+}
+
+textarea::placeholder{
+  color:#74809d;
+}
+
+.send{
+  width:46px;
+  height:46px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;
+  cursor:pointer;
+  font-size:20px;
+  transition:.2s;
+}
+
+.send:hover{
+  transform:scale(1.04);
+}
+
+.send:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.hint{
+  text-align:center;
+  color:#69748f;
+  font-size:11px;
+  margin-top:9px;
+}
+
+/* MOBILE */
+
+.mobile-menu{
+  display:none;
+}
+
+@media(max-width:760px){
+
+  .sidebar{
+    position:fixed;
+    z-index:20;
+    left:-290px;
+    top:0;
+    bottom:0;
+    transition:.25s;
+  }
+
+  .sidebar.open{
+    left:0;
+  }
+
+  .mobile-menu{
+    display:block;
+    border:0;
+    background:transparent;
+    color:white;
+    font-size:23px;
+    cursor:pointer;
+  }
+
+  .header{
+    padding:0 15px;
+  }
+
+  .input-area{
+    left:0;
+    padding:12px;
+  }
+
+  .chat{
+    padding-left:13px;
+    padding-right:13px;
+  }
+
+  .welcome h1{
+    font-size:32px;
+  }
+
+  .suggestions{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span>Zyro AI</span>
+    </div>
+
+    <button class="new-chat" onclick="newChat()">
+      ＋ Новый чат
+    </button>
+
+    <div class="history-title">
+      Чаты
+    </div>
+
+    <div class="history" id="history">
+      <div class="chat-item">
+        ⚡ Новый разговор
+      </div>
+    </div>
+
+    <div class="bottom">
+      Zyro AI<br>
+      Powered by Cloudflare Workers AI
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <header class="header">
+
+      <button class="mobile-menu" onclick="toggleSidebar()">
+        ☰
+      </button>
+
+      <div class="header-title">
+        ⚡ Zyro AI
+      </div>
+
+      <div class="status">
+        <span class="dot"></span>
+        AI онлайн
+      </div>
+
+    </header>
+
+    <section class="chat" id="chat">
+
+      <div class="chat-inner" id="chatInner">
+
+        <div class="welcome" id="welcome">
+
+          <div class="welcome-icon">
+            ✨
+          </div>
+
+          <h1>Чем я могу помочь?</h1>
+
+          <p>
+            Я Zyro AI — твой универсальный AI-помощник.
+            Задавай вопросы, проси написать код,
+            придумать идею или объяснить сложную тему.
+          </p>
+
+          <div class="suggestions">
+
+            <button class="suggestion"
+              onclick="useSuggestion('Напиши красивый HTML сайт')">
+              💻 Создать сайт
+            </button>
+
+            <button class="suggestion"
+              onclick="useSuggestion('Объясни мне искусственный интеллект простыми словами')">
+              🧠 Объяснить сложное
+            </button>
+
+            <button class="suggestion"
+              onclick="useSuggestion('Придумай мне идею для бизнеса')">
+              💡 Придумать идею
+            </button>
+
+            <button class="suggestion"
+              onclick="useSuggestion('Напиши программу на JavaScript')">
+              ⚙️ Написать код
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div class="input-area">
+
+  <div class="composer">
+
+    <textarea
+      id="input"
+      rows="1"
+      placeholder="Напишите сообщение..."
+      autocomplete="off"
+    ></textarea>
+
+    <button
+      class="send"
+      id="send"
+      onclick="sendMessage()"
+      title="Отправить"
+    >
+      ➤
+    </button>
+
+  </div>
+
+  <div class="hint">
+    Enter — отправить · Shift + Enter — новая строка
+  </div>
+
+</div>
+
+<script>
+
+/* =========================
+   НАСТРОЙКИ API
+========================= */
+
+const API_URL =
+  "https://calm-rice-2fe8zyro-ai.maksimcodify20.workers.dev";
+
+
+/* =========================
+   СОСТОЯНИЕ
+========================= */
+
+let messages = [];
+
+const chat = document.getElementById("chatInner");
+const input = document.getElementById("input");
+const sendButton = document.getElementById("send");
+
+
+/* =========================
+   СОХРАНЕНИЕ
+========================= */
+
+function saveChat(){
+  localStorage.setItem(
+    "zyro_messages",
+    JSON.stringify(messages)
+  );
+}
+
+
+function loadChat(){
+
+  try{
+
+    const saved =
+      JSON.parse(
+        localStorage.getItem("zyro_messages")
+      );
+
+    if(Array.isArray(saved) && saved.length){
+
+      messages = saved;
+
+      document.getElementById("welcome")
+        ?.remove();
+
+      messages.forEach(message => {
+
+        addMessage(
+          message.role,
+          message.content,
+          false
+        );
+
+      });
+
+    }
+
+  }catch(error){
+
+    console.log("История не загружена");
+
+  }
+}
+
+
+/* =========================
+   ДОБАВЛЕНИЕ СООБЩЕНИЯ
+========================= */
+
+function addMessage(
+  role,
+  content,
+  save = true
+){
+
+  const row =
+    document.createElement("div");
+
+  row.className =
+    "message " +
+    (role === "user" ? "user" : "ai");
+
+  const avatar =
+    document.createElement("div");
+
+  avatar.className = "avatar";
+
+  avatar.textContent =
+    role === "user" ? "👤" : "⚡";
+
+  const bubble =
+    document.createElement("div");
+
+  bubble.className = "bubble";
+
+  bubble.textContent = content;
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+
+  chat.appendChild(row);
+
+  if(save){
+    messages.push({
+      role:role,
+      content:content
+    });
+
+    saveChat();
+  }
+
+  scrollBottom();
+}
+
+
+/* =========================
+   TYPING
+========================= */
+
+function showTyping(){
+
+  const row =
+    document.createElement("div");
+
+  row.className = "message ai";
+  row.id = "typing";
+
+  const avatar =
+    document.createElement("div");
+
+  avatar.className = "avatar";
+  avatar.textContent = "⚡";
+
+  const bubble =
+    document.createElement("div");
+
+  bubble.className = "bubble";
+
+  bubble.innerHTML = `
+    <div class="typing">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  `;
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+
+  chat.appendChild(row);
+
+  scrollBottom();
+}
+
+
+function hideTyping(){
+
+  document.getElementById("typing")
+    ?.remove();
+
+}
+
+
+/* =========================
+   ОТПРАВКА
+========================= */
+
+async function sendMessage(){
+
+  const text =
+    input.value.trim();
+
+  if(!text || sendButton.disabled)
+    return;
+
+  document.getElementById("welcome")
+    ?.remove();
+
+  addMessage(
+    "user",
+    text
+  );
+
+  input.value = "";
+  input.style.height = "48px";
+
+  sendButton.disabled = true;
+
+  showTyping();
+
+  try{
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            messages:messages
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    hideTyping();
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "Ошибка сервера"
+      );
+
+    }
+
+    if(!data.answer){
+
+      throw new Error(
+        "AI не вернул ответ"
+      );
+
+    }
+
+    addMessage(
+      "assistant",
+      data.answer
+    );
+
+  }catch(error){
+
+    hideTyping();
+
+    addMessage(
+      "assistant",
+      "❌ Не удалось получить ответ.\n\n" +
+      "Проверь подключение API и Cloudflare Worker.\n\n" +
+      "Ошибка: " +
+      error.message
+    );
+
+  }finally{
+
+    sendButton.disabled = false;
+
+    input.focus();
+
+  }
+}
+
+
+/* =========================
+   ENTER
+========================= */
+
+input.addEventListener(
+  "keydown",
+  function(event){
+
+    if(
+      event.key === "Enter" &&
+      !event.shiftKey
+    ){
+
+      event.preventDefault();
+
+      sendMessage();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   АВТОВЫСОТА
+========================= */
+
+input.addEventListener(
+  "input",
+  function(){
+
+    this.style.height = "auto";
+
+    this.style.height =
+      Math.min(
+        this.scrollHeight,
+        150
+      ) + "px";
+
+  }
+);
+
+
+/* =========================
+   НОВЫЙ ЧАТ
+========================= */
+
+function newChat(){
+
+  messages = [];
+
+  localStorage.removeItem(
+    "zyro_messages"
+  );
+
+  chat.innerHTML = "";
+
+  const welcome =
+    document.createElement("div");
+
+  welcome.className = "welcome";
+  welcome.id = "welcome";
+
+  welcome.innerHTML = `
+    <div class="welcome-icon">✨</div>
+
+    <h1>Чем я могу помочь?</h1>
+
+    <p>
+      Я Zyro AI — твой универсальный
+      AI-помощник.
+    </p>
+
+    <div class="suggestions">
+
+      <button class="suggestion"
+        onclick="useSuggestion('Напиши красивый HTML сайт')">
+        💻 Создать сайт
+      </button>
+
+      <button class="suggestion"
+        onclick="useSuggestion('Объясни мне искусственный интеллект простыми словами')">
+        🧠 Объяснить сложное
+      </button>
+
+      <button class="suggestion"
+        onclick="useSuggestion('Придумай мне идею для бизнеса')">
+        💡 Придумать идею
+      </button>
+
+      <button class="suggestion"
+        onclick="useSuggestion('Напиши программу на JavaScript')">
+        ⚙️ Написать код
+      </button>
+
+    </div>
+  `;
+
+  chat.appendChild(welcome);
+
+  input.focus();
+}
+
+
+/* =========================
+   ПОДСКАЗКИ
+========================= */
+
+function useSuggestion(text){
+
+  input.value = text;
+
+  input.focus();
+
+  sendMessage();
+
+}
+
+
+/* =========================
+   ПРОКРУТКА
+========================= */
+
+function scrollBottom(){
+
+  const container =
+    document.getElementById("chat");
+
+  setTimeout(() => {
+
+    container.scrollTo({
+      top:container.scrollHeight,
+      behavior:"smooth"
+    });
+
+  },50);
+
+}
+
+
+/* =========================
+   МОБИЛЬНОЕ МЕНЮ
+========================= */
+
+function toggleSidebar(){
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle("open");
+
+}
+
+
+/* =========================
+   СТАРТ
+========================= */
+
+loadChat();
+
+input.focus();
+
+</script>
+
+</body>
+</html>
