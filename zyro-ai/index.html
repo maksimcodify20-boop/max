@@ -114,9 +114,19 @@ function typing(on){
   document.getElementById('typing')?.remove();if(!on)return;
   const row=document.createElement('div');row.id='typing';row.className='message ai';row.innerHTML='<div class="avatar">⚡</div><div class="bubble"><div class="typing"><i></i><i></i><i></i></div></div>';inner.append(row);scroll();
 }
+function improveImagePrompt(raw){
+  const prompt=raw.trim();
+  // Усиливаем описание роботов положительными визуальными признаками:
+  // модели лучше понимают конкретные детали, чем длинный список запретов.
+  if(/робот|robot|android|андроид/i.test(prompt)){
+    return prompt + ". Main subject: a clearly mechanical humanoid robot, with a metal or plastic robot head, visible articulated mechanical arms, hands, torso and legs, joints, panels and small screws. Keep the silhouette unmistakably robotic, with no animal anatomy. The robot is the central subject and must be clearly visible.";
+  }
+  return prompt;
+}
 async function generateImage(){
-  const prompt=input.value.trim();
-  if(!prompt){input.focus();input.placeholder='Сначала опиши картинку, например: робот в неоновом городе';return}
+  const rawPrompt=input.value.trim();
+  if(!rawPrompt){input.focus();input.placeholder='Сначала опиши картинку, например: робот в неоновом городе';return}
+  const prompt=improveImagePrompt(rawPrompt);
   const btn=document.getElementById('generateImageBtn');
   if(btn.disabled)return;
   document.getElementById('welcome')?.remove();
