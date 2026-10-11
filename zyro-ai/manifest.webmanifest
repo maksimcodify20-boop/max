@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "Zyro AI",
+  "short_name": "Zyro AI",
+  "description": "Твой AI-помощник",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#070711",
+  "background_color": "#070711",
+  "icons": [
+    { "src": "./app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
