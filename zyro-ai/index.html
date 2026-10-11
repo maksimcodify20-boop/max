@@ -368,7 +368,7 @@ function showPlanInfo(plan){
   if(plan==="Free") s.textContent="Тариф Free выбран. Серверные лимиты заработают после обновления Cloudflare Worker.";
   else s.textContent=plan+" пока отображается как будущий тариф. Оплата ещё не подключена, поэтому перейти на него и получить расширенные лимиты нельзя.";
 }
-async function zyroAuthHeaders(){
+async async function zyroAuthHeaders(){
   if(!zyroSupabase) return {"Content-Type":"application/json"};
   const {data}=await zyroSupabase.auth.getSession();
   const headers={"Content-Type":"application/json"};
