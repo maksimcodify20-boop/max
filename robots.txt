@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://maksimcodify20-boop.github.io/max/sitemap.xml
