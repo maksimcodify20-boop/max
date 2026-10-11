@@ -13,7 +13,46 @@
 .sideBottom{border-top:1px solid rgba(255,255,255,.08);padding:12px 10px 2px;color:#c9c9d4;font-size:12px;line-height:1.5}.sideBottom span{color:#777785}
 .composerWrap{left:270px}
 @media(max-width:800px){.sidebar{width:270px;left:-285px}.composerWrap{left:0}}
-</style></head><body><div class="app"><aside class="sidebar" id="sidebar"><div class="logo"><div class="logoMark">⚡</div><span>Zyro AI</span><button class="sideSearch" title="Поиск по истории" onclick="showSideInfo('Поиск')">⌕</button></div><button class="new" onclick="newChat()">＋ <span>Новый чат</span></button><nav class="sideNav" aria-label="Главное меню"><button class="navItem" onclick="showSideInfo('Изображения')"><span class="navIcon">▧</span>Изображения</button><button class="navItem" onclick="showSideInfo('Запланировано')"><span class="navIcon">◷</span>Запланировано</button><button class="navItem" onclick="showSideInfo('Библиотека')"><span class="navIcon">▤</span>Библиотека</button><button class="navItem" onclick="showSideInfo('Плагины')"><span class="navIcon">♧</span>Плагины</button><button class="navItem" onclick="showSideInfo('Codex')"><span class="navIcon">⌘</span>Codex</button><button class="navItem" onclick="showSideInfo('Обзор')"><span class="navIcon">•••</span>Обзор</button></nav><div class="sideGroup"><div class="sectionTitle">Проекты</div><button class="navItem mutedItem" onclick="showSideInfo('Проекты')">＋ Новый проект</button></div><div class="sideGroup recentGroup"><div class="sectionTitle">Недавние</div><div class="history" id="recentChats"><button class="chatItem active" onclick="newChat()">Новый разговор</button></div></div><div class="sideBottom">⚡ Zyro AI <span>· AI-помощник</span></div></aside><main class="main"><header class="topbar"><div class="topLeft"><button class="menu" onclick="toggleSidebar()">☰</button><div class="title">⚡ Zyro AI</div></div><div class="online"><i></i> AI онлайн</div><button id="zyroInstallButton" hidden style="border:1px solid rgba(139,92,246,.45);border-radius:10px;background:rgba(139,92,246,.15);color:#eee;padding:9px 12px;cursor:pointer;font-weight:600">⇩ Установить</button></header><section class="chat" id="chat"><div class="inner" id="inner"><div class="welcome" id="welcome"><div class="orb">✨</div><h1>Привет! Я <span class="gradient">Zyro AI</span></h1><p>Твой быстрый AI-помощник для идей, программирования, учёбы, текстов и создания сайтов.</p><div class="cards"><button class="card" onclick="suggest('Создай современный сайт-портфолио на HTML и CSS')">💻<b>Создать сайт</b><span>Красивый интерфейс с нуля</span></button><button class="card" onclick="suggest('Объясни искусственный интеллект простыми словами')">🧠<b>Объяснить</b><span>Сложное простыми словами</span></button><button class="card" onclick="suggest('Придумай 10 необычных идей для проекта')">💡<b>Придумать</b><span>Идеи для проектов</span></button><button class="card" onclick="suggest('Напиши JavaScript код для красивого интерактивного меню')">⚙️<b>Написать код</b><span>HTML, CSS, JS и другое</span></button></div></div></div></section></main></div><div class="composerWrap"><div class="filePreview" id="filePreview"></div><div class="composer"><input id="fileInput" type="file" multiple accept="image/*,.pdf,.txt,.doc,.docx,.csv,.json,.xlsx,.xls,.zip"><button class="attach" id="attach" type="button" onclick="document.getElementById('fileInput').click()" title="Выбрать картинки и файлы">+</button><button class="attach" id="generateImageBtn" type="button" onclick="generateImage()" title="Создать изображение по описанию" aria-label="Создать изображение">🖼️</button><button id="voiceBtn" type="button" onclick="toggleVoiceInput()" title="Голосовой ввод" aria-label="Голосовой ввод">🎙️</button><textarea id="input" rows="1" placeholder="Спросите что-нибудь у Zyro AI..." autocomplete="off"></textarea><button class="send" id="send" onclick="sendMessage()">➤</button></div><div class="hint">Enter — отправить · Shift + Enter — новая строка</div></div><script>
+
+/* Account, auth and subscription UI */
+.accountButton{border:1px solid rgba(139,92,246,.5);border-radius:11px;background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(34,211,238,.09));color:#fff;padding:9px 13px;cursor:pointer;font-weight:700;margin-left:10px}
+.authOverlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.authOverlay.open{display:flex}.authPanel{width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:22px;background:#10101d;box-shadow:0 25px 90px #0009}
+.authTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.authTitle{font-size:24px;font-weight:850;letter-spacing:-.5px}.authClose{border:1px solid var(--line);background:#ffffff0a;color:#fff;border-radius:10px;width:36px;height:36px;cursor:pointer;font-size:20px}
+.authTabs{display:flex;gap:7px;margin:18px 0}.authTab{flex:1;padding:10px;border:1px solid var(--line);border-radius:11px;background:#ffffff07;color:#aaa;cursor:pointer}.authTab.active{background:#8b5cf626;color:#fff;border-color:#8b5cf688}
+.authField{display:block;width:100%;margin:8px 0 13px;padding:12px 13px;border:1px solid #ffffff20;border-radius:12px;background:#080812;color:#fff;outline:none}.authField:focus{border-color:#a78bfa}
+.authPrimary{width:100%;padding:12px;border:0;border-radius:12px;background:linear-gradient(100deg,#8b5cf6,#ec4899,#22d3ee);color:#fff;font-weight:800;cursor:pointer}
+.authStatus{font-size:13px;line-height:1.55;color:#c4b5fd;margin-top:12px;overflow-wrap:anywhere}.authMuted{font-size:12px;color:#9292a7;line-height:1.6;margin:10px 0}
+.planGrid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.planCard{border:1px solid #ffffff18;background:#ffffff05;border-radius:15px;padding:13px}.planHead{display:flex;align-items:center;justify-content:space-between;gap:8px}.planPrice{font-size:19px;font-weight:850}.planCard p{font-size:12px;color:#a5a5b8;line-height:1.5;margin:8px 0}.planAction{border:1px solid #8b5cf655;background:#8b5cf61c;color:#fff;border-radius:10px;padding:8px 10px;cursor:pointer}.planCard.featured{border-color:#8b5cf688;background:linear-gradient(135deg,#8b5cf61a,#22d3ee0b)}
+@media(max-width:500px){.authPanel{padding:17px}.authTitle{font-size:21px}.accountButton{padding:8px 10px;font-size:12px}.topbar{gap:8px}}
+</style></head><body><div class="app"><aside class="sidebar" id="sidebar"><div class="logo"><div class="logoMark">⚡</div><span>Zyro AI</span><button class="sideSearch" title="Поиск по истории" onclick="showSideInfo('Поиск')">⌕</button></div><button class="new" onclick="newChat()">＋ <span>Новый чат</span></button><nav class="sideNav" aria-label="Главное меню"><button class="navItem" onclick="showSideInfo('Изображения')"><span class="navIcon">▧</span>Изображения</button><button class="navItem" onclick="showSideInfo('Запланировано')"><span class="navIcon">◷</span>Запланировано</button><button class="navItem" onclick="showSideInfo('Библиотека')"><span class="navIcon">▤</span>Библиотека</button><button class="navItem" onclick="showSideInfo('Плагины')"><span class="navIcon">♧</span>Плагины</button><button class="navItem" onclick="showSideInfo('Codex')"><span class="navIcon">⌘</span>Codex</button><button class="navItem" onclick="showSideInfo('Обзор')"><span class="navIcon">•••</span>Обзор</button></nav><div class="sideGroup"><div class="sectionTitle">Проекты</div><button class="navItem mutedItem" onclick="showSideInfo('Проекты')">＋ Новый проект</button></div><div class="sideGroup recentGroup"><div class="sectionTitle">Недавние</div><div class="history" id="recentChats"><button class="chatItem active" onclick="newChat()">Новый разговор</button></div></div><div class="sideBottom">⚡ Zyro AI <span>· AI-помощник</span></div></aside><main class="main"><header class="topbar"><div class="topLeft"><button class="menu" onclick="toggleSidebar()">☰</button><div class="title">⚡ Zyro AI</div></div><div class="online"><i></i> AI онлайн</div><button id="accountButton" class="accountButton" onclick="openAccount()">Войти</button><button id="zyroInstallButton" hidden style="border:1px solid rgba(139,92,246,.45);border-radius:10px;background:rgba(139,92,246,.15);color:#eee;padding:9px 12px;cursor:pointer;font-weight:600">⇩ Установить</button></header><section class="chat" id="chat"><div class="inner" id="inner"><div class="welcome" id="welcome"><div class="orb">✨</div><h1>Привет! Я <span class="gradient">Zyro AI</span></h1><p>Твой быстрый AI-помощник для идей, программирования, учёбы, текстов и создания сайтов.</p><div class="cards"><button class="card" onclick="suggest('Создай современный сайт-портфолио на HTML и CSS')">💻<b>Создать сайт</b><span>Красивый интерфейс с нуля</span></button><button class="card" onclick="suggest('Объясни искусственный интеллект простыми словами')">🧠<b>Объяснить</b><span>Сложное простыми словами</span></button><button class="card" onclick="suggest('Придумай 10 необычных идей для проекта')">💡<b>Придумать</b><span>Идеи для проектов</span></button><button class="card" onclick="suggest('Напиши JavaScript код для красивого интерактивного меню')">⚙️<b>Написать код</b><span>HTML, CSS, JS и другое</span></button></div></div></div></section></main></div>
+<div class="authOverlay" id="authOverlay" role="dialog" aria-modal="true" aria-labelledby="authHeading" onclick="if(event.target===this)closeAccount()">
+ <div class="authPanel">
+  <div class="authTop"><div><div class="authTitle" id="authHeading">Аккаунт Zyro AI</div><div class="authMuted" style="margin-bottom:0">Войди, чтобы управлять своим аккаунтом и тарифом.</div></div><button class="authClose" onclick="closeAccount()" aria-label="Закрыть">×</button></div>
+  <div id="authLoggedOut">
+   <div class="authTabs"><button id="loginTab" class="authTab active" onclick="setAuthMode('login')">Вход</button><button id="signupTab" class="authTab" onclick="setAuthMode('signup')">Регистрация</button></div>
+   <form id="authForm">
+    <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
+    <label for="authPassword">Пароль</label><input class="authField" id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="Не менее 8 символов" required>
+    <button class="authPrimary" id="authSubmit" type="submit">Войти</button>
+   </form>
+   <div class="authStatus" id="authStatus" role="status"></div>
+   <div class="authMuted">Для регистрации нужен настоящий Supabase Project URL и публичный Publishable/anon key. Пароль не сохраняется в коде сайта.</div>
+  </div>
+  <div id="authLoggedIn" hidden>
+   <p id="authUserLabel" class="authMuted"></p>
+   <div class="authStatus" id="currentPlanLabel">Тариф: Free</div>
+   <div class="planGrid">
+    <div class="planCard"><div class="planHead"><strong>Free</strong><span class="planPrice">0 сом</span></div><p>20 сообщений и 2 генерации изображений в день (планируемые лимиты).</p><button class="planAction" onclick="showPlanInfo('Free')">Мой бесплатный тариф</button></div>
+    <div class="planCard featured"><div class="planHead"><strong>Pro</strong><span class="planPrice">199 сом/мес.</span></div><p>Для активного использования. Планируемый лимит: 200 сообщений и 20 изображений в день.</p><button class="planAction" onclick="showPlanInfo('Pro')">Скоро подключим оплату</button></div>
+    <div class="planCard"><div class="planHead"><strong>Ultimate</strong><span class="planPrice">499 сом/мес.</span></div><p>Для интенсивной работы. Планируемый лимит: 500 сообщений и 50 изображений в день.</p><button class="planAction" onclick="showPlanInfo('Ultimate')">Скоро подключим оплату</button></div>
+   </div>
+   <div class="authStatus" id="planStatus" role="status"></div>
+   <button class="authPrimary" style="margin-top:14px" onclick="zyroSignOut()">Выйти из аккаунта</button>
+  </div>
+ </div>
+</div>
+<div class="composerWrap"><div class="filePreview" id="filePreview"></div><div class="composer"><input id="fileInput" type="file" multiple accept="image/*,.pdf,.txt,.doc,.docx,.csv,.json,.xlsx,.xls,.zip"><button class="attach" id="attach" type="button" onclick="document.getElementById('fileInput').click()" title="Выбрать картинки и файлы">+</button><button class="attach" id="generateImageBtn" type="button" onclick="generateImage()" title="Создать изображение по описанию" aria-label="Создать изображение">🖼️</button><button id="voiceBtn" type="button" onclick="toggleVoiceInput()" title="Голосовой ввод" aria-label="Голосовой ввод">🎙️</button><textarea id="input" rows="1" placeholder="Спросите что-нибудь у Zyro AI..." autocomplete="off"></textarea><button class="send" id="send" onclick="sendMessage()">➤</button></div><div class="hint">Enter — отправить · Shift + Enter — новая строка</div></div><script>
 const API_URL="https://restless-recipe-f74f.maksimcodify20.workers.dev";
 const STORAGE_KEY="zyro_chats";
 let chats=[];
@@ -173,7 +212,7 @@ async function generateImage(){
   const wait=document.createElement('div');wait.className='message ai';wait.id='imageGenerating';
   wait.innerHTML='<div class="avatar">⚡</div><div class="bubble">🎨 Создаю изображение… Это может занять несколько секунд.</div>';inner.append(wait);scroll();
   try{
-    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'generate-image',prompt})});
+    const r=await fetch(API_URL,{method:'POST',headers:await zyroAuthHeaders(),body:JSON.stringify({action:'generate-image',prompt})});
     const data=await r.json().catch(()=>({}));
     if(!r.ok)throw new Error(data.error||'Ошибка сервера');
     const imageUrl=data.dataURI||data.imageUrl||(data.image?'data:image/jpeg;base64,'+data.image:null);
@@ -196,7 +235,7 @@ async function sendMessage(){
   addMessage('user',shownText,true,files);selectedFiles=[];renderFilePreview();input.value='';resize();send.disabled=true;typing(true);
   try{
     if(!text&&files.length){typing(false);addMessage('assistant','Файлы прикреплены к сообщению. Чтобы я мог прочитать их содержимое или анализировать изображения, нужно дополнительно подключить обработку файлов в Cloudflare Worker.');return}
-    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
+    const r=await fetch(API_URL,{method:'POST',headers:await zyroAuthHeaders(),body:JSON.stringify({messages})});
     let data={};try{data=await r.json()}catch{}
     if(!r.ok)throw new Error(data.error||'Ошибка сервера');
     if(!data.answer)throw new Error('AI не вернул ответ');
@@ -254,4 +293,88 @@ loadChats();input.focus();
     if (button) button.hidden = true;
   });
 })();
-</script></body></html>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/*
+ * Zyro AI Auth setup:
+ * Replace both values below with the Project URL and PUBLIC publishable/anon key
+ * from Supabase. Never put service_role or secret keys in this file.
+ */
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY_HERE";
+let zyroSupabase = null;
+let zyroAuthMode = "login";
+let zyroSession = null;
+function supabaseReady(){
+  return !!(window.supabase && SUPABASE_URL.startsWith("https://") && SUPABASE_URL.endsWith(".supabase.co") && !SUPABASE_URL.includes("PASTE_") && SUPABASE_PUBLISHABLE_KEY && !SUPABASE_PUBLISHABLE_KEY.includes("PASTE_"));
+}
+function initZyroAuth(){
+  if(!supabaseReady()) return;
+  try{
+    zyroSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    zyroSupabase.auth.getSession().then(({data})=>{zyroSession=data.session||null;renderAuthState()});
+    zyroSupabase.auth.onAuthStateChange((_event,session)=>{zyroSession=session;renderAuthState()});
+  }catch(e){console.error("Zyro auth init failed",e)}
+}
+function openAccount(){
+  document.getElementById("authOverlay").classList.add("open");
+  document.body.style.overflow="hidden";
+  const status=document.getElementById("authStatus");
+  if(!supabaseReady() && !zyroSession) status.textContent="Нужно один раз добавить данные проекта Supabase в index.html. Пока регистрация не активирована.";
+  renderAuthState();
+}
+function closeAccount(){document.getElementById("authOverlay").classList.remove("open");document.body.style.overflow=""}
+function setAuthMode(mode){
+  zyroAuthMode=mode;
+  document.getElementById("loginTab").classList.toggle("active",mode==="login");
+  document.getElementById("signupTab").classList.toggle("active",mode==="signup");
+  document.getElementById("authSubmit").textContent=mode==="login"?"Войти":"Создать аккаунт";
+  document.getElementById("authPassword").autocomplete=mode==="login"?"current-password":"new-password";
+  document.getElementById("authStatus").textContent="";
+}
+function renderAuthState(){
+  const logged=!!(zyroSession&&zyroSession.user);
+  document.getElementById("authLoggedOut").hidden=logged;
+  document.getElementById("authLoggedIn").hidden=!logged;
+  document.getElementById("accountButton").textContent=logged?"Аккаунт":"Войти";
+  if(logged){
+    document.getElementById("authUserLabel").textContent="Вы вошли как "+(zyroSession.user.email||"пользователь");
+    document.getElementById("currentPlanLabel").textContent="Тариф: Free · платные тарифы пока не активированы";
+  }
+}
+document.getElementById("authForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const status=document.getElementById("authStatus"),button=document.getElementById("authSubmit");
+  if(!supabaseReady()){status.textContent="Supabase пока не настроен. Вставь Project URL и публичный ключ в константы SUPABASE_URL и SUPABASE_PUBLISHABLE_KEY в index.html.";return}
+  const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;
+  button.disabled=true;button.textContent="Подождите…";status.textContent="";
+  try{
+    const result=zyroAuthMode==="signup"
+      ? await zyroSupabase.auth.signUp({email,password,options:{emailRedirectTo:location.href.split("#")[0]}})
+      : await zyroSupabase.auth.signInWithPassword({email,password});
+    if(result.error) throw result.error;
+    if(zyroAuthMode==="signup"&&!result.data.session) status.textContent="Аккаунт создан. Проверь почту и подтверди адрес, затем войди.";
+    else {zyroSession=result.data.session;status.textContent="Успешно!";renderAuthState()}
+  }catch(error){status.textContent=error.message||"Не удалось выполнить запрос."}
+  finally{button.disabled=false;button.textContent=zyroAuthMode==="login"?"Войти":"Создать аккаунт"}
+});
+async function zyroSignOut(){
+  if(zyroSupabase) await zyroSupabase.auth.signOut();
+  zyroSession=null;renderAuthState();document.getElementById("authStatus").textContent="Вы вышли из аккаунта.";setAuthMode("login");
+}
+function showPlanInfo(plan){
+  const s=document.getElementById("planStatus");
+  if(plan==="Free") s.textContent="Тариф Free выбран. Серверные лимиты заработают после обновления Cloudflare Worker.";
+  else s.textContent=plan+" пока отображается как будущий тариф. Оплата ещё не подключена, поэтому перейти на него и получить расширенные лимиты нельзя.";
+}
+async function zyroAuthHeaders(){
+  if(!zyroSupabase) return {"Content-Type":"application/json"};
+  const {data}=await zyroSupabase.auth.getSession();
+  const headers={"Content-Type":"application/json"};
+  if(data.session?.access_token) headers.Authorization="Bearer "+data.session.access_token;
+  return headers;
+}
+initZyroAuth();
+</script>
+</body></html>
