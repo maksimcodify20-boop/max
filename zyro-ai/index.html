@@ -354,7 +354,7 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       ? await zyroSupabase.auth.signUp({email,password,options:{emailRedirectTo:location.href.split("#")[0]}})
       : await zyroSupabase.auth.signInWithPassword({email,password});
     if(result.error) throw result.error;
-    if(zyroAuthMode==="signup"&&!result.data.session) status.textContent="Аккаунт создан. Проверь почту и подтверди адрес, затем войди.";
+    if(zyroAuthMode==="signup"&&!result.data.session) status.textContent="Регистрация создана, но вход пока не выполнен. Отключи подтверждение email в Supabase или настрой отправку писем." ;
     else {zyroSession=result.data.session;status.textContent="Успешно!";renderAuthState()}
   }catch(error){status.textContent=error.message||"Не удалось выполнить запрос."}
   finally{button.disabled=false;button.textContent=zyroAuthMode==="login"?"Войти":"Создать аккаунт"}
