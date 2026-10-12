@@ -326,9 +326,12 @@ function openAccount(){
 function closeAccount(){document.getElementById("authOverlay").classList.remove("open");document.body.style.overflow=""}
 function setAuthMode(mode){
   zyroAuthMode=mode;
+  // Reset the one-time-code flow whenever the user switches Login/Registration.
+  zyroOtpSent=false;
   document.getElementById("loginTab").classList.toggle("active",mode==="login");
   document.getElementById("signupTab").classList.toggle("active",mode==="signup");
   document.getElementById("authSubmit").textContent="Получить код";
+  document.getElementById("authCode").value="";
   document.getElementById("authCode").hidden=true;
   document.getElementById("authCode").required=false;
   document.getElementById("authEmail").disabled=false;
