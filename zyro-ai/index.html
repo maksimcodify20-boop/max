@@ -33,7 +33,7 @@
    <div class="authTabs"><button id="loginTab" class="authTab active" onclick="setAuthMode('login')">Вход</button><button id="signupTab" class="authTab" onclick="setAuthMode('signup')">Регистрация</button></div>
    <form id="authForm">
     <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
-    <label for="authCode">Код из письма</label><input class="authField" id="authCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="6 цифр из письма" hidden>
+    <label for="authCode" id="authCodeLabel" hidden>Код из письма</label><input class="authField" id="authCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="6 цифр из письма" hidden>
     <button class="authPrimary" id="authSubmit" type="submit">Получить код</button>
     <button class="authTab" id="authResend" type="button" hidden style="width:100%;margin-top:8px">Отправить новый код</button>
    </form>
@@ -334,6 +334,7 @@ function setAuthMode(mode){
   document.getElementById("authSubmit").textContent="Получить код";
   document.getElementById("authCode").value="";
   document.getElementById("authCode").hidden=true;
+  document.getElementById("authCodeLabel").hidden=true;
   document.getElementById("authCode").required=false;
   document.getElementById("authEmail").disabled=false;
   document.getElementById("authStatus").textContent="";
@@ -378,6 +379,7 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       if(result.error) throw result.error;
       zyroOtpSent=true;
       document.getElementById("authCode").hidden=false;
+      document.getElementById("authCodeLabel").hidden=false;
       document.getElementById("authCode").required=true;
       document.getElementById("authEmail").disabled=true;
       button.textContent="Подтвердить код";
@@ -404,6 +406,7 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       zyroOtpSent=false;
       document.getElementById("authCode").value="";
       document.getElementById("authCode").hidden=true;
+      document.getElementById("authCodeLabel").hidden=true;
       document.getElementById("authCode").required=false;
       document.getElementById("authEmail").disabled=false;
       document.getElementById("authResend").hidden=true;
@@ -436,6 +439,12 @@ document.getElementById("authResend").addEventListener("click",async()=>{
     const {error}=await zyroSupabase.auth.signInWithOtp({email,options:{shouldCreateUser:zyroAuthMode==="signup"}});
     if(error) throw error;
     document.getElementById("authCode").value="";
+    document.getElementById("authCode").hidden=false;
+    document.getElementById("authCodeLabel").hidden=false;
+    document.getElementById("authCode").required=true;
+    document.getElementById("authEmail").disabled=true;
+    zyroOtpSent=true;
+    document.getElementById("authSubmit").textContent="Подтвердить код";
     startZyroResendCooldown(60);
     status.textContent="Новый код отправлен. Используй последнее письмо; старый код может больше не работать.";
   }catch(error){
