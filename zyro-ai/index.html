@@ -20,7 +20,7 @@
 .authOverlay.open{display:flex}.authPanel{width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:22px;background:#10101d;box-shadow:0 25px 90px #0009}
 .authTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.authTitle{font-size:24px;font-weight:850;letter-spacing:-.5px}.authClose{border:1px solid var(--line);background:#ffffff0a;color:#fff;border-radius:10px;width:36px;height:36px;cursor:pointer;font-size:20px}
 .authTabs{display:flex;gap:7px;margin:18px 0}.authTab{flex:1;padding:10px;border:1px solid var(--line);border-radius:11px;background:#ffffff07;color:#aaa;cursor:pointer}.authTab.active{background:#8b5cf626;color:#fff;border-color:#8b5cf688}
-.authField{display:block;width:100%;margin:8px 0 13px;padding:12px 13px;border:1px solid #ffffff20;border-radius:12px;background:#080812;color:#fff;outline:none}.authField:focus{border-color:#a78bfa}
+.authField{display:block;width:100%;margin:8px 0 13px;padding:12px 13px;border:1px solid #ffffff20;border-radius:12px;background:#080812;color:#fff;outline:none}.authField[hidden]{display:none!important}.authField:focus{border-color:#a78bfa}
 .authPrimary{width:100%;padding:12px;border:0;border-radius:12px;background:linear-gradient(100deg,#8b5cf6,#ec4899,#22d3ee);color:#fff;font-weight:800;cursor:pointer}
 .authStatus{font-size:13px;line-height:1.55;color:#c4b5fd;margin-top:12px;overflow-wrap:anywhere}.authMuted{font-size:12px;color:#9292a7;line-height:1.6;margin:10px 0}
 .planGrid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.planCard{border:1px solid #ffffff18;background:#ffffff05;border-radius:15px;padding:13px}.planHead{display:flex;align-items:center;justify-content:space-between;gap:8px}.planPrice{font-size:19px;font-weight:850}.planCard p{font-size:12px;color:#a5a5b8;line-height:1.5;margin:8px 0}.planAction{border:1px solid #8b5cf655;background:#8b5cf61c;color:#fff;border-radius:10px;padding:8px 10px;cursor:pointer}.planCard.featured{border-color:#8b5cf688;background:linear-gradient(135deg,#8b5cf61a,#22d3ee0b)}
@@ -401,7 +401,8 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
     }
   }catch(error){
     const message=String(error?.message||"");
-    if(/expired|invalid|otp_expired|token/i.test(message)){
+    const codeName=String(error?.code||"");
+    if(/expired|invalid|otp_expired|token/i.test(message+" "+codeName)){
       zyroOtpSent=false;
       document.getElementById("authCode").value="";
       document.getElementById("authCode").hidden=true;
@@ -409,9 +410,19 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       document.getElementById("authEmail").disabled=false;
       document.getElementById("authResend").hidden=true;
       button.textContent="Получить новый код";
-      status.textContent="Этот код или ссылка устарели либо уже использованы. Нажми «Получить новый код», затем используй только самое последнее письмо и введи 6 цифр на этой странице — не нажимай старую ссылку.";
+      status.textContent="Код неверный, устарел или уже использован. Нажми «Получить новый код» и введи 6 цифр только из самого последнего письма.";
+    }else if(/over_email_send_rate_limit|over_request_rate_limit|rate.?limit|429/i.test(message+" "+codeName)){
+      status.textContent="Слишком много попыток. Подожди около минуты и запроси код ещё раз.";
+    }else if(/email_not_confirmed/i.test(message+" "+codeName)){
+      status.textContent="Email ещё не подтверждён. Запроси новый код и введи его на этой странице.";
+    }else if(/user_not_found|invalid_credentials/i.test(message+" "+codeName)){
+      status.textContent=zyroAuthMode==="login"?"Аккаунт с этой почтой не найден. Открой вкладку «Регистрация» и создай аккаунт.":"Не удалось найти аккаунт. Проверь адрес электронной почты.";
+    }else if(/signup_disabled|signups not allowed/i.test(message+" "+codeName)){
+      status.textContent="Регистрация отключена в Supabase. Нужно включить разрешение на регистрацию в настройках Auth.";
+    }else if(/email_address_invalid|invalid email/i.test(message+" "+codeName)){
+      status.textContent="Проверь адрес электронной почты — он введён неверно.";
     }else{
-      status.textContent=message||"Не удалось выполнить запрос.";
+      status.textContent=message||"Не удалось выполнить запрос. Проверь подключение и попробуй ещё раз.";
     }
   }
   finally{button.disabled=false;if(!zyroOtpSent&&button.textContent!=="Получить новый код")button.textContent="Получить код";else if(zyroOtpSent)button.textContent="Подтвердить код"}
