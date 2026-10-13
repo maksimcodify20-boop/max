@@ -350,6 +350,21 @@ function renderAuthState(){
   }
 }
 let zyroOtpSent=false;
+let zyroResendUntil=0;
+let zyroResendTimer=null;
+function startZyroResendCooldown(seconds){
+  const resend=document.getElementById("authResend");
+  if(zyroResendTimer) clearInterval(zyroResendTimer);
+  zyroResendUntil=Date.now()+seconds*1000;
+  function tick(){
+    const left=Math.max(0,Math.ceil((zyroResendUntil-Date.now())/1000));
+    resend.disabled=left>0;
+    resend.textContent=left>0?"Повторная отправка через "+left+" с":"Отправить новый код";
+    if(left===0 && zyroResendTimer){clearInterval(zyroResendTimer);zyroResendTimer=null;}
+  }
+  tick();
+  zyroResendTimer=setInterval(tick,250);
+}
 document.getElementById("authForm").addEventListener("submit",async event=>{
   event.preventDefault();
   const status=document.getElementById("authStatus"),button=document.getElementById("authSubmit");
