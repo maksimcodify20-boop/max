@@ -369,7 +369,14 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       document.getElementById("authResend").hidden=false;
       status.textContent="Код отправлен на "+email+". Проверь входящие и папку «Спам». Используй последнее письмо.";
     }else{
-      const result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
+      // Try the current email OTP type first; older signup templates may require signup/magiclink.
+      let result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
+      if(result.error){
+        result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"signup"});
+      }
+      if(result.error){
+        result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"magiclink"});
+      }
       if(result.error) throw result.error;
       zyroSession=result.data.session;
       status.textContent="Вход выполнен!";
