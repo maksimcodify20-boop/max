@@ -388,12 +388,9 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       if(!/^[0-9]{6}$/.test(code)){
         throw new Error("Введи шестизначный код из последнего письма. Не нажимай ссылку из письма.");
       }
-      // Recent Supabase Auth logs show recovery OTPs for this project, so try that type first.
-      // If this email was generated as a normal sign-in OTP, fall back to type "email".
-      let result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"recovery"});
-      if(result.error && /otp_expired|token has expired|invalid.*token/i.test(String(result.error.code||"")+" "+String(result.error.message||""))){
-        result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
-      }
+      // signInWithOtp sends a sign-in email OTP; verify it with type "email".
+      // Using "recovery" here rejects valid sign-in codes as expired/invalid.
+      const result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
       if(result.error) throw result.error;
       zyroSession=result.data.session;
       status.textContent="Вход выполнен!";
