@@ -383,8 +383,22 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       renderAuthState();
       closeAccount();
     }
-  }catch(error){status.textContent=error.message||"Не удалось выполнить запрос."}
-  finally{button.disabled=false;if(!zyroOtpSent)button.textContent="Получить код";else button.textContent="Подтвердить код"}
+  }catch(error){
+    const message=String(error?.message||"");
+    if(/expired|invalid|otp_expired|token/i.test(message)){
+      zyroOtpSent=false;
+      document.getElementById("authCode").value="";
+      document.getElementById("authCode").hidden=true;
+      document.getElementById("authCode").required=false;
+      document.getElementById("authEmail").disabled=false;
+      document.getElementById("authResend").hidden=true;
+      button.textContent="Получить новый код";
+      status.textContent="Этот код или ссылка устарели либо уже использованы. Нажми «Получить новый код», затем используй только самое последнее письмо и введи 6 цифр на этой странице — не нажимай старую ссылку.";
+    }else{
+      status.textContent=message||"Не удалось выполнить запрос.";
+    }
+  }
+  finally{button.disabled=false;if(!zyroOtpSent&&button.textContent!=="Получить новый код")button.textContent="Получить код";else if(zyroOtpSent)button.textContent="Подтвердить код"}
 });
 document.getElementById("authResend").addEventListener("click",async()=>{
   const status=document.getElementById("authStatus");
