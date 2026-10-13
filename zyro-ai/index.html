@@ -35,6 +35,7 @@
     <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
     <label for="authCode">Код из письма</label><input class="authField" id="authCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="6 цифр из письма" hidden>
     <button class="authPrimary" id="authSubmit" type="submit">Получить код</button>
+    <button class="authTab" id="authResend" type="button" hidden style="width:100%;margin-top:8px">Отправить новый код</button>
    </form>
    <div class="authStatus" id="authStatus" role="status"></div>
    <div class="authMuted">Введи email, получи одноразовый код из письма и введи его для входа. Отправка писем должна быть настроена в Supabase.</div>
@@ -336,6 +337,7 @@ function setAuthMode(mode){
   document.getElementById("authCode").required=false;
   document.getElementById("authEmail").disabled=false;
   document.getElementById("authStatus").textContent="";
+  document.getElementById("authResend").hidden=true;
 }
 function renderAuthState(){
   const logged=!!(zyroSession&&zyroSession.user);
@@ -357,14 +359,15 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
   button.disabled=true;status.textContent="";
   try{
     if(!zyroOtpSent){
-      const result=await zyroSupabase.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+      const result=await zyroSupabase.auth.signInWithOtp({email,options:{shouldCreateUser:zyroAuthMode==="signup"}});
       if(result.error) throw result.error;
       zyroOtpSent=true;
       document.getElementById("authCode").hidden=false;
       document.getElementById("authCode").required=true;
       document.getElementById("authEmail").disabled=true;
       button.textContent="Подтвердить код";
-      status.textContent="Если почтовая отправка настроена, код отправлен на "+email+". Проверь также папку «Спам».";
+      document.getElementById("authResend").hidden=false;
+      status.textContent="Код отправлен на "+email+". Проверь входящие и папку «Спам». Используй последнее письмо.";
     }else{
       const result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
       if(result.error) throw result.error;
@@ -375,6 +378,20 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
     }
   }catch(error){status.textContent=error.message||"Не удалось выполнить запрос."}
   finally{button.disabled=false;if(!zyroOtpSent)button.textContent="Получить код";else button.textContent="Подтвердить код"}
+});
+document.getElementById("authResend").addEventListener("click",async()=>{
+  const status=document.getElementById("authStatus");
+  const email=document.getElementById("authEmail").value.trim();
+  const resend=document.getElementById("authResend");
+  if(!zyroSupabase||!email){status.textContent="Сначала введи email.";return}
+  resend.disabled=true;status.textContent="Отправляем новый код...";
+  try{
+    const {error}=await zyroSupabase.auth.signInWithOtp({email,options:{shouldCreateUser:zyroAuthMode==="signup"}});
+    if(error) throw error;
+    document.getElementById("authCode").value="";
+    status.textContent="Новый код отправлен. Используй последнее письмо; старый код может больше не работать.";
+  }catch(error){status.textContent=error.message||"Не удалось отправить новый код."}
+  finally{resend.disabled=false}
 });
 async function zyroSignOut(){
   zyroOtpSent=false;
