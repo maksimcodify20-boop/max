@@ -33,7 +33,7 @@
    <div class="authTabs"><button id="loginTab" class="authTab active" onclick="setAuthMode('login')">Вход</button><button id="signupTab" class="authTab" onclick="setAuthMode('signup')">Регистрация</button></div>
    <form id="authForm">
     <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
-    <label for="authCode">Код из письма</label><input class="authField" id="authCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" minlength="6" maxlength="8" inputmode="numeric" placeholder="Код из письма (6–8 цифр)" hidden>
+    <label for="authCode">Код из письма</label><input class="authField" id="authCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" inputmode="numeric" placeholder="6 цифр из письма" hidden>
     <button class="authPrimary" id="authSubmit" type="submit">Получить код</button>
     <button class="authTab" id="authResend" type="button" hidden style="width:100%;margin-top:8px">Отправить новый код</button>
    </form>
@@ -369,14 +369,10 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       document.getElementById("authResend").hidden=false;
       status.textContent="Код отправлен на "+email+". Проверь входящие и папку «Спам». Используй последнее письмо.";
     }else{
-      // Try the current email OTP type first; older signup templates may require signup/magiclink.
-      let result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
-      if(result.error){
-        result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"signup"});
+      if(!/^[0-9]{6}$/.test(code)){
+        throw new Error("Введи шестизначный код из последнего письма. Не нажимай ссылку из письма.");
       }
-      if(result.error){
-        result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"magiclink"});
-      }
+      const result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
       if(result.error) throw result.error;
       zyroSession=result.data.session;
       status.textContent="Вход выполнен!";
