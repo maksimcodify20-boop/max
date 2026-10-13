@@ -372,7 +372,11 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
       if(!/^[0-9]{6}$/.test(code)){
         throw new Error("Введи шестизначный код из последнего письма. Не нажимай ссылку из письма.");
       }
-      const result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
+      // Some emails are sent by Supabase's password-recovery flow, which requires type "recovery".
+      let result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
+      if(result.error && /otp_expired|token has expired|invalid.*token/i.test(String(result.error.code||"")+" "+String(result.error.message||""))){
+        result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"recovery"});
+      }
       if(result.error) throw result.error;
       zyroSession=result.data.session;
       status.textContent="Вход выполнен!";
