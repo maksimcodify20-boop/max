@@ -392,33 +392,6 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
     else status.textContent=message||"Не удалось выполнить запрос. Проверь подключение.";
   }finally{button.disabled=false;}
 });
-document.getElementById("authResend").addEventListener("click",async()=>{
-  const status=document.getElementById("authStatus");
-  const email=document.getElementById("authEmail").value.trim();
-  const resend=document.getElementById("authResend");
-  if(!zyroSupabase||!email){status.textContent="Сначала введи email.";return}
-  if(Date.now()<zyroResendUntil) return;
-  resend.disabled=true;status.textContent="Отправляем новый код...";
-  try{
-    const {error}=await zyroSupabase.auth.signInWithOtp({email,options:{shouldCreateUser:zyroAuthMode==="signup"}});
-    if(error) throw error;
-    document.getElementById("authCode").value="";
-    document.getElementById("authCode").hidden=false;
-    document.getElementById("authCodeLabel").hidden=false;
-    document.getElementById("authCode").required=true;
-    document.getElementById("authEmail").disabled=true;
-    zyroOtpSent=true;
-    document.getElementById("authSubmit").textContent="Подтвердить код";
-    startZyroResendCooldown(60);
-    status.textContent="Новый код отправлен. Используй последнее письмо; старый код может больше не работать.";
-  }catch(error){
-    const message=String(error?.message||"Не удалось отправить новый код.");
-    const wait=message.match(/after\s+(\d+)\s+seconds/i);
-    if(wait) startZyroResendCooldown(Number(wait[1]));
-    status.textContent=/rate.?limit|429|after\s+\d+\s+seconds/i.test(message)?"Подожди немного перед повторной отправкой кода.":message;
-    resend.disabled=Date.now()<zyroResendUntil;
-  }
-});
 async function zyroSignOut(){
   zyroOtpSent=false;
   if(zyroSupabase) await zyroSupabase.auth.signOut();
