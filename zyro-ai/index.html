@@ -35,6 +35,7 @@
     <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
     <label for="authPassword">Пароль</label><input class="authField" id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Не менее 6 символов" required>
     <button class="authPrimary" id="authSubmit" type="submit">Войти</button>
+    <button class="authTab" id="authForgot" type="button" style="width:100%;margin-top:8px">Забыли пароль?</button>
     <button class="authTab" id="authResend" type="button" hidden style="width:100%;margin-top:8px">Отправить новый код</button>
    </form>
    <div class="authStatus" id="authStatus" role="status"></div>
@@ -315,7 +316,19 @@ function initZyroAuth(){
   try{
     zyroSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
     zyroSupabase.auth.getSession().then(({data})=>{zyroSession=data.session||null;renderAuthState()});
-    zyroSupabase.auth.onAuthStateChange((_event,session)=>{zyroSession=session;renderAuthState()});
+    zyroSupabase.auth.onAuthStateChange(async (event,session)=>{
+      zyroSession=session;renderAuthState();
+      if(event==="PASSWORD_RECOVERY"){
+        const newPassword=prompt("Придумай новый пароль (минимум 6 символов):");
+        if(!newPassword || newPassword.length<6){
+          alert("Пароль не изменён. Открой письмо восстановления ещё раз и введи пароль минимум из 6 символов.");
+          return;
+        }
+        const {error}=await zyroSupabase.auth.updateUser({password:newPassword});
+        if(error) alert("Не удалось изменить пароль: "+error.message);
+        else alert("Пароль изменён! Теперь войди с новым паролем.");
+      }
+    });
   }catch(e){console.error("Zyro auth init failed",e)}
 }
 function openAccount(){
@@ -391,6 +404,20 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
     else if(/signup_disabled|signups not allowed/i.test(message+" "+codeName)) status.textContent="Регистрация отключена в Supabase. Включи разрешение на регистрацию в настройках Auth.";
     else status.textContent=message||"Не удалось выполнить запрос. Проверь подключение.";
   }finally{button.disabled=false;}
+});
+document.getElementById("authForgot").addEventListener("click",async()=>{
+  const status=document.getElementById("authStatus");
+  const email=document.getElementById("authEmail").value.trim();
+  if(!email){status.textContent="Сначала введи свой email.";document.getElementById("authEmail").focus();return}
+  if(!supabaseReady()){status.textContent="Supabase не настроен.";return}
+  const button=document.getElementById("authForgot");
+  button.disabled=true;status.textContent="Отправляем письмо для восстановления...";
+  try{
+    const {error}=await zyroSupabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    if(error) throw error;
+    status.textContent="Если аккаунт существует, письмо для восстановления отправлено. Проверь «Входящие», «Спам» и «Промоакции».";
+  }catch(error){status.textContent="Ошибка отправки: "+(error.message||"проверь настройки Supabase Redirect URLs и SMTP");}
+  finally{button.disabled=false;}
 });
 async function zyroSignOut(){
   zyroOtpSent=false;
