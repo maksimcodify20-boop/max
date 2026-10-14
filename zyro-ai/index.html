@@ -33,12 +33,12 @@
    <div class="authTabs"><button id="loginTab" class="authTab active" onclick="setAuthMode('login')">Вход</button><button id="signupTab" class="authTab" onclick="setAuthMode('signup')">Регистрация</button></div>
    <form id="authForm">
     <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
-    <label for="authCode" id="authCodeLabel" hidden>Код из письма</label><input class="authField" id="authCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="6 цифр из письма" hidden>
-    <button class="authPrimary" id="authSubmit" type="submit">Получить код</button>
+    <label for="authPassword">Пароль</label><input class="authField" id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Не менее 6 символов" required>
+    <button class="authPrimary" id="authSubmit" type="submit">Войти</button>
     <button class="authTab" id="authResend" type="button" hidden style="width:100%;margin-top:8px">Отправить новый код</button>
    </form>
    <div class="authStatus" id="authStatus" role="status"></div>
-   <div class="authMuted">Введи email, получи одноразовый код из письма и введи его для входа. Отправка писем должна быть настроена в Supabase.</div>
+   <div class="authMuted">Введи email и пароль. Если аккаунт был создан только по коду из письма, используй восстановление пароля или создай аккаунт с паролем.</div>
   </div>
   <div id="authLoggedIn" hidden>
    <p id="authUserLabel" class="authMuted"></p>
@@ -331,11 +331,9 @@ function setAuthMode(mode){
   zyroOtpSent=false;
   document.getElementById("loginTab").classList.toggle("active",mode==="login");
   document.getElementById("signupTab").classList.toggle("active",mode==="signup");
-  document.getElementById("authSubmit").textContent="Получить код";
-  document.getElementById("authCode").value="";
-  document.getElementById("authCode").hidden=true;
-  document.getElementById("authCodeLabel").hidden=true;
-  document.getElementById("authCode").required=false;
+  document.getElementById("authSubmit").textContent=mode==="login"?"Войти":"Создать аккаунт";
+  document.getElementById("authPassword").value="";
+  document.getElementById("authPassword").autocomplete=mode==="login"?"current-password":"new-password";
   document.getElementById("authEmail").disabled=false;
   document.getElementById("authStatus").textContent="";
   document.getElementById("authResend").hidden=true;
@@ -371,62 +369,28 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
   const status=document.getElementById("authStatus"),button=document.getElementById("authSubmit");
   if(!supabaseReady()){status.textContent="Supabase не настроен.";return}
   const email=document.getElementById("authEmail").value.trim();
-  const code=document.getElementById("authCode").value.trim();
+  const password=document.getElementById("authPassword").value;
   button.disabled=true;status.textContent="";
   try{
-    if(!zyroOtpSent){
-      const result=await zyroSupabase.auth.signInWithOtp({email,options:{shouldCreateUser:zyroAuthMode==="signup"}});
+    let result;
+    if(zyroAuthMode==="signup"){
+      if(password.length<6) throw new Error("Пароль должен содержать минимум 6 символов.");
+      result=await zyroSupabase.auth.signUp({email,password});
       if(result.error) throw result.error;
-      zyroOtpSent=true;
-      document.getElementById("authCode").hidden=false;
-      document.getElementById("authCodeLabel").hidden=false;
-      document.getElementById("authCode").required=true;
-      document.getElementById("authEmail").disabled=true;
-      button.textContent="Подтвердить код";
-      document.getElementById("authResend").hidden=false;
-      startZyroResendCooldown(60);
-      status.textContent="Код отправлен на "+email+". Проверь входящие и папку «Спам». Используй последнее письмо.";
+      if(!result.data.session){status.textContent="Аккаунт создан. Подтверди email по письму, затем войди с этим паролем.";return}
     }else{
-      if(!/^[0-9]{6}$/.test(code)){
-        throw new Error("Введи шестизначный код из последнего письма. Не нажимай ссылку из письма.");
-      }
-      // signInWithOtp sends a sign-in email OTP; verify it with type "email".
-      // Using "recovery" here rejects valid sign-in codes as expired/invalid.
-      const result=await zyroSupabase.auth.verifyOtp({email,token:code,type:"email"});
+      result=await zyroSupabase.auth.signInWithPassword({email,password});
       if(result.error) throw result.error;
-      zyroSession=result.data.session;
-      status.textContent="Вход выполнен!";
-      renderAuthState();
-      closeAccount();
     }
+    zyroSession=result.data.session;renderAuthState();closeAccount();
   }catch(error){
-    const message=String(error?.message||"");
-    const codeName=String(error?.code||"");
-    if(/expired|invalid|otp_expired|token/i.test(message+" "+codeName)){
-      zyroOtpSent=false;
-      document.getElementById("authCode").value="";
-      document.getElementById("authCode").hidden=true;
-      document.getElementById("authCodeLabel").hidden=true;
-      document.getElementById("authCode").required=false;
-      document.getElementById("authEmail").disabled=false;
-      document.getElementById("authResend").hidden=true;
-      button.textContent="Получить новый код";
-      status.textContent="Код неверный, устарел или уже использован. Нажми «Получить новый код» и введи 6 цифр только из самого последнего письма.";
-    }else if(/over_email_send_rate_limit|over_request_rate_limit|rate.?limit|429/i.test(message+" "+codeName)){
-      status.textContent="Слишком много попыток. Подожди около минуты и запроси код ещё раз.";
-    }else if(/email_not_confirmed/i.test(message+" "+codeName)){
-      status.textContent="Email ещё не подтверждён. Запроси новый код и введи его на этой странице.";
-    }else if(/user_not_found|invalid_credentials/i.test(message+" "+codeName)){
-      status.textContent=zyroAuthMode==="login"?"Аккаунт с этой почтой не найден. Открой вкладку «Регистрация» и создай аккаунт.":"Не удалось найти аккаунт. Проверь адрес электронной почты.";
-    }else if(/signup_disabled|signups not allowed/i.test(message+" "+codeName)){
-      status.textContent="Регистрация отключена в Supabase. Нужно включить разрешение на регистрацию в настройках Auth.";
-    }else if(/email_address_invalid|invalid email/i.test(message+" "+codeName)){
-      status.textContent="Проверь адрес электронной почты — он введён неверно.";
-    }else{
-      status.textContent=message||"Не удалось выполнить запрос. Проверь подключение и попробуй ещё раз.";
-    }
-  }
-  finally{button.disabled=false;if(!zyroOtpSent&&button.textContent!=="Получить новый код")button.textContent="Получить код";else if(zyroOtpSent)button.textContent="Подтвердить код"}
+    const message=String(error?.message||""),codeName=String(error?.code||"");
+    if(/invalid login credentials|invalid_credentials|wrong password/i.test(message+" "+codeName)) status.textContent="Неверный email или пароль. Если раньше входил по коду из письма, используй восстановление пароля или зарегистрируй аккаунт с паролем.";
+    else if(/email_not_confirmed/i.test(message+" "+codeName)) status.textContent="Сначала подтверди email по письму.";
+    else if(/user already registered/i.test(message)) status.textContent="Аккаунт уже существует. Перейди во вкладку «Вход» или восстанови пароль.";
+    else if(/signup_disabled|signups not allowed/i.test(message+" "+codeName)) status.textContent="Регистрация отключена в Supabase. Включи разрешение на регистрацию в настройках Auth.";
+    else status.textContent=message||"Не удалось выполнить запрос. Проверь подключение.";
+  }finally{button.disabled=false;}
 });
 document.getElementById("authResend").addEventListener("click",async()=>{
   const status=document.getElementById("authStatus");
