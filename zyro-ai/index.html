@@ -451,12 +451,17 @@ async function zyroAuthHeaders(forceRefresh=false){
   }
 }
 async function zyroApiFetch(body){
-  let response=await fetch(API_URL,{method:"POST",headers:await zyroAuthHeaders(),body:JSON.stringify(body)});
-  if(response.status===401 || response.status===403){
-    const retry=await fetch(API_URL,{method:"POST",headers:await zyroAuthHeaders(true),body:JSON.stringify(body)});
-    if(retry.status!==401 && retry.status!==403) return retry;
-    return retry;
+  const send=async(forceRefresh)=>fetch(API_URL,{method:"POST",headers:await zyroAuthHeaders(forceRefresh),body:JSON.stringify(body)});
+  let response=await send(false);
+  let sessionRejected=response.status===401||response.status===403;
+  if(!sessionRejected){
+    try{
+      const payload=await response.clone().json();
+      const message=String(payload.error||payload.message||"");
+      sessionRejected=/сессия истекла|session expired|invalid jwt|jwt expired|token expired|invalid token/i.test(message);
+    }catch{}
   }
+  if(sessionRejected) response=await send(true);
   return response;
 }
 initZyroAuth();
