@@ -214,7 +214,7 @@ async function generateImage(){
   const wait=document.createElement('div');wait.className='message ai';wait.id='imageGenerating';
   wait.innerHTML='<div class="avatar">⚡</div><div class="bubble">🎨 Создаю изображение… Это может занять несколько секунд.</div>';inner.append(wait);scroll();
   try{
-    const r=await fetch(API_URL,{method:'POST',headers:await zyroAuthHeaders(),body:JSON.stringify({action:'generate-image',prompt})});
+    const r=await zyroApiFetch({action:'generate-image',prompt});
     const data=await r.json().catch(()=>({}));
     if(!r.ok)throw new Error(data.error||'Ошибка сервера');
     const imageUrl=data.dataURI||data.imageUrl||(data.image?'data:image/jpeg;base64,'+data.image:null);
@@ -237,7 +237,7 @@ async function sendMessage(){
   addMessage('user',shownText,true,files);selectedFiles=[];renderFilePreview();input.value='';resize();send.disabled=true;typing(true);
   try{
     if(!text&&files.length){typing(false);addMessage('assistant','Файлы прикреплены к сообщению. Чтобы я мог прочитать их содержимое или анализировать изображения, нужно дополнительно подключить обработку файлов в Cloudflare Worker.');return}
-    const r=await fetch(API_URL,{method:'POST',headers:await zyroAuthHeaders(),body:JSON.stringify({messages})});
+    const r=await zyroApiFetch({messages});
     let data={};try{data=await r.json()}catch{}
     if(!r.ok)throw new Error(data.error||'Ошибка сервера');
     if(!data.answer)throw new Error('AI не вернул ответ');
@@ -429,12 +429,35 @@ function showPlanInfo(plan){
   if(plan==="Free") s.textContent="Тариф Free выбран. Серверные лимиты заработают после обновления Cloudflare Worker.";
   else s.textContent=plan+" пока отображается как будущий тариф. Оплата ещё не подключена, поэтому перейти на него и получить расширенные лимиты нельзя.";
 }
-async function zyroAuthHeaders(){
-  if(!zyroSupabase) return {"Content-Type":"application/json"};
-  const {data}=await zyroSupabase.auth.getSession();
+async function zyroAuthHeaders(forceRefresh=false){
   const headers={"Content-Type":"application/json"};
-  if(data.session?.access_token) headers.Authorization="Bearer "+data.session.access_token;
-  return headers;
+  if(!zyroSupabase) return headers;
+  try{
+    let result;
+    if(forceRefresh) result=await zyroSupabase.auth.refreshSession();
+    else {
+      result=await zyroSupabase.auth.getSession();
+      const session=result.data?.session;
+      if(session && session.expires_at && session.expires_at*1000<Date.now()+60000){
+        result=await zyroSupabase.auth.refreshSession();
+      }
+    }
+    const session=result.data?.session;
+    if(session?.access_token) headers.Authorization="Bearer "+session.access_token;
+    return headers;
+  }catch(error){
+    console.warn("Zyro session refresh failed",error);
+    return headers;
+  }
+}
+async function zyroApiFetch(body){
+  let response=await fetch(API_URL,{method:"POST",headers:await zyroAuthHeaders(),body:JSON.stringify(body)});
+  if(response.status===401 || response.status===403){
+    const retry=await fetch(API_URL,{method:"POST",headers:await zyroAuthHeaders(true),body:JSON.stringify(body)});
+    if(retry.status!==401 && retry.status!==403) return retry;
+    return retry;
+  }
+  return response;
 }
 initZyroAuth();
 </script>
