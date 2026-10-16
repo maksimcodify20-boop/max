@@ -7,8 +7,53 @@
 <section class="hero"><div class="tag">AI-СТУДИЯ ДЛЯ ТВОИХ ИДЕЙ</div><h1>Идеи превращаются<br>в <span>цифровые продукты</span></h1><p class="muted">Создаём сайты, AI-изображения и помогаем с программированием.<br>Для авторов, начинающих проектов и малого бизнеса.</p><a class="btn" href="#order">Обсудить проект →</a></section>
 <section class="section"><h2>Услуги</h2><div class="grid"><article class="card"><h3>⌘ Создание сайтов</h3><p class="muted">Лендинги, портфолио и сайты услуг с адаптацией под телефон.</p><button class="btn" onclick="choose('Создание сайта')">Выбрать услугу</button></article><article class="card"><h3>✧ AI-изображения</h3><p class="muted">Иллюстрации, обложки и визуальные идеи для контента.</p><button class="btn" onclick="choose('AI-изображения')">Выбрать услугу</button></article><article class="card"><h3>⌁ Помощь с кодом</h3><p class="muted">HTML, CSS, JavaScript, разбор ошибок и запуск проекта.</p><button class="btn" onclick="choose('Помощь с программированием')">Выбрать услугу</button></article></div></section>
 <section class="section"><h2>Понятные стартовые цены</h2><div class="grid"><article class="card"><h3>Free AI</h3><div class="price">0 сом</div><p class="muted">Для вопросов, идей и знакомства с Zyro AI.</p><a class="btn" href="index.html">Попробовать</a></article><article class="card"><h3>Стартовый сайт</h3><div class="price">от 1 500 сом</div><p class="muted">Простая страница для проекта, услуги или портфолио.</p><button class="btn" onclick="choose('Стартовый сайт')">Оставить заявку</button></article><article class="card"><h3>AI-контент</h3><div class="price">от 300 сом</div><p class="muted">Пакет визуальных материалов по согласованному заданию.</p><button class="btn" onclick="choose('AI-контент')">Оставить заявку</button></article></div><p class="note">Цены указаны ориентировочно в сомах. Точная стоимость, сроки и состав работ согласуются до начала заказа. Онлайн-оплата пока не подключена.</p></section>
-<section class="section card" id="order"><h2>Заявка на проект</h2><p class="muted">Заполни форму — она подготовит текст заявки, который можно скопировать и отправить через удобный канал связи.</p><form id="orderForm" class="form"><label>Имя<input id="name" required maxlength="80" placeholder="Как к тебе обращаться?"></label><label>Контакт для ответа<input id="contact" required maxlength="160" placeholder="Telegram, email или телефон"></label><label>Услуга<select id="service"><option>Создание сайта</option><option>AI-изображения</option><option>Помощь с программированием</option><option>Стартовый сайт</option><option>AI-контент</option><option>Другое</option></select></label><label>Бюджет<select id="budget"><option>Пока не знаю</option><option>До 500 сом</option><option>500–1 500 сом</option><option>1 500–5 000 сом</option><option>Более 5 000 сом</option></select></label><label class="wide">Что нужно сделать?<textarea id="details" maxlength="2000" placeholder="Опиши идею, сроки и пожелания"></textarea></label><div class="wide"><button class="btn" type="submit">Подготовить заявку</button> <button class="btn" id="copy" type="button" hidden>Скопировать текст</button><p id="result" class="muted" role="status"></p></div></form><p class="note">Важно: эта статическая форма не отправляет данные на сервер и не уведомляет владельца автоматически. Скопируй заявку и отправь её вручную.</p></section>
+<section class="section card" id="order"><h2>Заявка на проект</h2><p class="muted">Заполни форму — она подготовит текст заявки, который можно скопировать и отправить через удобный канал связи.</p><form id="orderForm" class="form"><label>Имя<input id="name" required maxlength="80" placeholder="Как к тебе обращаться?"></label><label>Контакт для ответа<input id="contact" required maxlength="160" placeholder="Telegram, email или телефон"></label><label>Услуга<select id="service"><option>Создание сайта</option><option>AI-изображения</option><option>Помощь с программированием</option><option>Стартовый сайт</option><option>AI-контент</option><option>Другое</option></select></label><label>Бюджет<select id="budget"><option>Пока не знаю</option><option>До 500 сом</option><option>500–1 500 сом</option><option>1 500–5 000 сом</option><option>Более 5 000 сом</option></select></label><label class="wide">Что нужно сделать?<textarea id="details" maxlength="2000" placeholder="Опиши идею, сроки и пожелания"></textarea></label><div class="wide"><button class="btn" id="sendOrder" type="submit">Отправить заявку в Telegram</button><button class="btn" id="copy" type="button" hidden style="margin-left:8px">Скопировать текст</button><p id="result" class="muted" role="status" aria-live="polite"></p></div></form><p class="note">После отправки заявка поступит владельцу Zyro AI в Telegram. Токен бота хранится на сервере и не публикуется на сайте.</p></section>
 <footer class="foot">© Zyro AI Studio · AI-инструменты и цифровые услуги <span style="float:right"><a href="index.html">Вернуться в чат ↑</a></span></footer></div>
 <script>
-function choose(s){document.getElementById("service").value=s;document.getElementById("order").scrollIntoView({behavior:"smooth"})}let orderText="";document.getElementById("orderForm").addEventListener("submit",function(e){e.preventDefault();const val=id=>document.getElementById(id).value.trim();orderText="ЗАЯВКА ZYRO AI STUDIO\nИмя: "+val("name")+"\nКонтакт: "+val("contact")+"\nУслуга: "+val("service")+"\nБюджет: "+val("budget")+"\nОписание: "+val("details");document.getElementById("result").textContent="Заявка подготовлена. Нажми «Скопировать текст» и отправь её владельцу Zyro AI.";document.getElementById("copy").hidden=false});document.getElementById("copy").addEventListener("click",async function(){try{await navigator.clipboard.writeText(orderText);document.getElementById("result").textContent="Скопировано! Теперь отправь заявку через свой канал связи."}catch(e){window.prompt("Скопируй заявку:",orderText)}});
+const TELEGRAM_LEAD_ENDPOINT="https://restless-recipe-f74f.maksimcodify20.workers.dev/lead";
+function choose(s){document.getElementById("service").value=s;document.getElementById("order").scrollIntoView({behavior:"smooth"})}
+let orderText="";
+const orderForm=document.getElementById("orderForm");
+const resultEl=document.getElementById("result");
+const sendButton=document.getElementById("sendOrder");
+orderForm.addEventListener("submit",async function(e){
+  e.preventDefault();
+  const val=id=>document.getElementById(id).value.trim();
+  const order={
+    name:val("name"),
+    contact:val("contact"),
+    service:val("service"),
+    budget:val("budget"),
+    details:val("details")
+  };
+  orderText="ЗАЯВКА ZYRO AI STUDIO\nИмя: "+order.name+"\nКонтакт: "+order.contact+"\nУслуга: "+order.service+"\nБюджет: "+order.budget+"\nОписание: "+(order.details||"Не указано");
+  sendButton.disabled=true;
+  sendButton.textContent="Отправка...";
+  resultEl.textContent="Отправляем заявку...";
+  document.getElementById("copy").hidden=true;
+  try{
+    const response=await fetch(TELEGRAM_LEAD_ENDPOINT,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(order)
+    });
+    let data={};
+    try{data=await response.json()}catch{}
+    if(!response.ok||data.success===false||data.error){
+      throw new Error(data.error||"Сервер не принял заявку ("+response.status+").");
+    }
+    resultEl.textContent="✅ Заявка отправлена! Если Telegram-бот настроен на сервере, владелец получит её в Telegram.";
+    orderForm.reset();
+  }catch(err){
+    resultEl.textContent="Не удалось отправить автоматически: "+(err.message||"ошибка соединения")+". Можно скопировать заявку и отправить её вручную.";
+    document.getElementById("copy").hidden=false;
+  }finally{
+    sendButton.disabled=false;
+    sendButton.textContent="Отправить заявку в Telegram";
+  }
+});
+document.getElementById("copy").addEventListener("click",async function(){
+  try{await navigator.clipboard.writeText(orderText);resultEl.textContent="Текст заявки скопирован. Теперь отправь его владельцу Zyro AI в Telegram."}
+  catch(e){window.prompt("Скопируй заявку:",orderText)}
+});
 </script></body></html>
