@@ -31,7 +31,7 @@
   <div class="authTop"><div><div class="authTitle" id="authHeading">Аккаунт Zyro AI</div><div class="authMuted" style="margin-bottom:0">Войди, чтобы управлять своим аккаунтом и тарифом.</div></div><button class="authClose" onclick="closeAccount()" aria-label="Закрыть">×</button></div>
   <div id="authLoggedOut">
    <div class="authTabs"><button id="loginTab" class="authTab active" onclick="setAuthMode('login')">Вход</button><button id="signupTab" class="authTab" onclick="setAuthMode('signup')">Регистрация</button></div>
-   <form id="authForm">
+   <form id="authForm">\n    <div id="zyroTurnstile" style="margin:14px 0;min-height:1px"></div>
     <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
     <label for="authPassword">Пароль</label><input class="authField" id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Не менее 6 символов" required>
     <button class="authPrimary" id="authSubmit" type="submit">Войти</button>
@@ -296,6 +296,7 @@ loadChats();input.focus();
   });
 })();
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /*
@@ -303,6 +304,66 @@ loadChats();input.focus();
  * Replace both values below with the Project URL and PUBLIC publishable/anon key
  * from Supabase. Never put service_role or secret keys in this file.
  */
+
+const ZYRO_TURNSTILE_SITE_KEY = "0x4AAAAAAFbUU94-IbQQ16z1";
+let zyroTurnstileWidgetId = null;
+let zyroTurnstilePromise = null;
+function zyroTurnstileReady(){
+  return new Promise((resolve,reject)=>{
+    const started=Date.now();
+    const poll=()=>{
+      if(window.turnstile){resolve();return}
+      if(Date.now()-started>15000){reject(new Error("CAPTCHA не загрузилась. Обнови страницу."));return}
+      setTimeout(poll,150);
+    };
+    poll();
+  });
+}
+async function zyroTurnstileToken(){
+  await zyroTurnstileReady();
+  const holder=document.getElementById("zyroTurnstile");
+  if(!holder) throw new Error("Не найден блок CAPTCHA.");
+  if(zyroTurnstileWidgetId===null){
+    zyroTurnstileWidgetId=window.turnstile.render(holder,{
+      sitekey:ZYRO_TURNSTILE_SITE_KEY,
+      execution:"execute",
+      appearance:"interaction-only",
+      callback:()=>{},
+      "error-callback":()=>{},
+      "expired-callback":()=>{}
+    });
+  }
+  return new Promise((resolve,reject)=>{
+    let finished=false;
+    const timeout=setTimeout(()=>{
+      if(!finished){finished=true;reject(new Error("CAPTCHA не завершена. Попробуй ещё раз."))}
+    },120000);
+    try{
+      window.turnstile.reset(zyroTurnstileWidgetId);
+      window.turnstile.execute(zyroTurnstileWidgetId);
+      const original=window.turnstile.getResponse;
+      const started=Date.now();
+      const poll=()=>{
+        if(finished)return;
+        const token=window.turnstile.getResponse(zyroTurnstileWidgetId);
+        if(token){
+          finished=true;clearTimeout(timeout);resolve(token);return;
+        }
+        if(Date.now()-started>120000){
+          finished=true;clearTimeout(timeout);reject(new Error("CAPTCHA не завершена."));return;
+        }
+        setTimeout(poll,200);
+      };
+      poll();
+    }catch(error){
+      finished=true;clearTimeout(timeout);reject(error);
+    }
+  });
+}
+function zyroTurnstileReset(){
+  try{if(window.turnstile && zyroTurnstileWidgetId!==null)window.turnstile.reset(zyroTurnstileWidgetId)}catch{}
+}
+
 const SUPABASE_URL = "https://wbcmectylxlyjkgqftvz.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_xfleLYadwX-Peuhj06We6w_G0ZO74ft";
 let zyroSupabase = null;
@@ -384,15 +445,17 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
   const email=document.getElementById("authEmail").value.trim();
   const password=document.getElementById("authPassword").value;
   button.disabled=true;status.textContent="";
+  let captchaToken="";
   try{
+    captchaToken=await zyroTurnstileToken();
     let result;
     if(zyroAuthMode==="signup"){
       if(password.length<6) throw new Error("Пароль должен содержать минимум 6 символов.");
-      result=await zyroSupabase.auth.signUp({email,password});
+      result=await zyroSupabase.auth.signUp({email,password,options:{captchaToken}});
       if(result.error) throw result.error;
       if(!result.data.session){status.textContent="Аккаунт создан. Подтверди email по письму, затем войди с этим паролем.";return}
     }else{
-      result=await zyroSupabase.auth.signInWithPassword({email,password});
+      result=await zyroSupabase.auth.signInWithPassword({email,password,options:{captchaToken}});
       if(result.error) throw result.error;
     }
     zyroSession=result.data.session;renderAuthState();closeAccount();
@@ -451,7 +514,13 @@ async function zyroAuthHeaders(forceRefresh=false){
   }
 }
 async function zyroApiFetch(body){
-  const send=async(forceRefresh)=>fetch(API_URL,{method:"POST",headers:await zyroAuthHeaders(forceRefresh),body:JSON.stringify(body)});
+  const send=async(forceRefresh)=>{
+    const headers=await zyroAuthHeaders(forceRefresh);
+    const token=await zyroTurnstileToken();
+    headers["X-Turnstile-Token"]=token;
+    try{return await fetch(API_URL,{method:"POST",headers,body:JSON.stringify(body)})}
+    finally{zyroTurnstileReset()}
+  };
   let response=await send(false);
   let sessionRejected=response.status===401||response.status===403;
   if(!sessionRejected){
