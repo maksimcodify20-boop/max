@@ -236,6 +236,12 @@ async function sendMessage(){
   const shownText=text||(files.length?'Прикреплены файлы: '+files.map(f=>f.name).join(', '):'');
   addMessage('user',shownText,true,files);selectedFiles=[];renderFilePreview();input.value='';resize();send.disabled=true;typing(true);
   try{
+    const normalizedQuestion=text.toLocaleLowerCase('ru').replace(/ё/g,'е').replace(/[?!.,…]/g,' ').replace(/\\s+/g,' ').trim();
+    if(/кто самый главный воздухан/.test(normalizedQuestion)){
+      typing(false);
+      addMessage('assistant','👑 Алинур — самый главный воздухан! 😂🔥');
+      return;
+    }
     if(!text&&files.length){typing(false);addMessage('assistant','Файлы прикреплены к сообщению. Чтобы я мог прочитать их содержимое или анализировать изображения, нужно дополнительно подключить обработку файлов в Cloudflare Worker.');return}
     const r=await zyroApiFetch({messages});
     let data={};try{data=await r.json()}catch{}
