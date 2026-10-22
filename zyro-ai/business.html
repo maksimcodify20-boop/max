@@ -1,124 +1,397 @@
+
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Zyro AI Studio — сайты, AI-изображения и помощь с кодом."><link rel="icon" type="image/svg+xml" href="./favicon.svg?v=4"><title>Zyro AI Studio — услуги и заказы</title>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Zyro AI Studio — сайты, AI-изображения и помощь с кодом.">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=4">
+<title>Zyro AI Studio — услуги и заказы</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#070a18;color:#f5f7ff;font:16px Inter,system-ui,Arial,sans-serif}a{color:inherit;text-decoration:none}.wrap{max-width:1050px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px}.logo{font-weight:850;letter-spacing:.5px}.btn{display:inline-block;border:1px solid #6557df;background:linear-gradient(110deg,#7b2be0,#1675e8);color:white;border-radius:11px;padding:12px 17px;cursor:pointer}.hero{padding:62px 0 36px;text-align:center}.tag{color:#a99bff;font-size:13px;letter-spacing:2px}.hero h1{font-size:clamp(34px,7vw,66px);line-height:1.05;margin:16px 0}.hero h1 span{color:#a78bfa}.muted{color:#bac5df;line-height:1.65}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:linear-gradient(145deg,#111936,#0b1023);border:1px solid #27345d;border-radius:17px;padding:20px}.price{font-size:25px;font-weight:800;margin:10px 0}.section{margin:35px 0}.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}label{font-size:13px;color:#c9d3eb}input,select,textarea{width:100%;display:block;margin-top:7px;background:#070d20;border:1px solid #34436e;border-radius:9px;padding:12px;color:white;font:inherit}textarea{min-height:110px;resize:vertical}.wide{grid-column:1/-1}.note{font-size:12px;color:#91a1c5}.foot{border-top:1px solid #253052;padding:20px 0;color:#91a1c5;font-size:13px}@media(max-width:700px){.grid,.form{grid-template-columns:1fr}.wide{grid-column:auto}.hero{padding-top:42px}}
-.topLinks{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}.topLink{display:inline-flex;align-items:center;justify-content:center;padding:11px 13px;border:1px solid #35416b;border-radius:11px;background:#101831;color:#e9eaff;text-decoration:none;font-weight:700}@media(max-width:520px){.wrap{padding:16px}.top{align-items:flex-start;flex-direction:column}.topLinks{width:100%;justify-content:flex-start}.topLink,.top .btn{padding:10px 11px;font-size:13px}}.logo{display:inline-flex;align-items:center;gap:10px}.studioMark{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;color:#fff;background:linear-gradient(135deg,#8b5cf6,#ec4899,#22d3ee);box-shadow:0 8px 24px #8b5cf644}.studioMark svg{width:25px;height:25px}.studioName{color:#a78bfa}.logo:hover .studioMark{filter:brightness(1.12)}@media(max-width:520px){.studioMark{width:34px;height:34px;border-radius:10px}.studioMark svg{width:23px;height:23px}}</style></head><body><div class="wrap">
-<header class="top"><a class="logo" href="/zyro-ai/" aria-label="Zyro AI Studio — на главную"><span class="studioMark" aria-hidden="true"><svg viewBox="0 0 48 48" role="img" focusable="false"><path d="M27.5 4 11 26h11l-2 18L37 20H25z" fill="currentColor"/></svg></span><span>ZYRO AI <span class="studioName">STUDIO</span></span></a><nav class="topLinks" aria-label="Главное меню"><a class="topLink" href="/zyro-ai/business.html#order">Заявка</a><a class="btn" href="/zyro-ai/">Открыть AI-чат</a></nav></header>
-<section class="hero"><div class="tag">AI-СТУДИЯ ДЛЯ ТВОИХ ИДЕЙ</div><h1>Идеи превращаются<br>в <span>цифровые продукты</span></h1><p class="muted">Создаём сайты, AI-изображения и помогаем с программированием.<br>Для авторов, начинающих проектов и малого бизнеса.</p><a class="btn" href="#order">Обсудить проект →</a></section>
-<section class="section"><h2>Услуги</h2><div class="grid"><article class="card"><h3>⌘ Создание сайтов</h3><p class="muted">Лендинги, портфолио и сайты услуг с адаптацией под телефон.</p><button class="btn" onclick="choose('Создание сайта')">Выбрать услугу</button></article><article class="card"><h3>✧ AI-изображения</h3><p class="muted">Иллюстрации, обложки и визуальные идеи для контента.</p><button class="btn" onclick="choose('AI-изображения')">Выбрать услугу</button></article><article class="card"><h3>⌁ Помощь с кодом</h3><p class="muted">HTML, CSS, JavaScript, разбор ошибок и запуск проекта.</p><button class="btn" onclick="choose('Помощь с программированием')">Выбрать услугу</button></article></div></section>
-<section class="section"><h2>Понятные стартовые цены</h2><div class="grid"><article class="card"><h3>Free AI</h3><div class="price">0 сом</div><p class="muted">Для вопросов, идей и знакомства с Zyro AI.</p><a class="btn" href="index.html">Попробовать</a></article><article class="card"><h3>Стартовый сайт</h3><div class="price">от 1 500 сом</div><p class="muted">Простая страница для проекта, услуги или портфолио.</p><button class="btn" onclick="choose('Стартовый сайт')">Оставить заявку</button></article><article class="card"><h3>AI-контент</h3><div class="price">от 300 сом</div><p class="muted">Пакет визуальных материалов по согласованному заданию.</p><button class="btn" onclick="choose('AI-контент')">Оставить заявку</button></article></div><p class="note">Цены указаны ориентировочно в сомах. Точная стоимость, сроки и состав работ согласуются до начала заказа. Онлайн-оплата пока не подключена.</p></section>
-<section class="section card" id="order"><h2>Заявка на проект</h2><p class="muted">Заполни форму — она подготовит текст заявки, который можно скопировать и отправить через удобный канал связи.</p><form id="orderForm" class="form">\n<div class="wide"><div id="zyroTurnstile" style="margin:8px 0;min-height:1px"></div></div><label>Имя<input id="name" required maxlength="80" placeholder="Как к тебе обращаться?"></label><label>Контакт для ответа<input id="contact" required maxlength="160" placeholder="Telegram, email или телефон"></label><label>Услуга<select id="service"><option>Создание сайта</option><option>AI-изображения</option><option>Помощь с программированием</option><option>Стартовый сайт</option><option>AI-контент</option><option>Другое</option></select></label><label>Бюджет<select id="budget"><option>Пока не знаю</option><option>До 500 сом</option><option>500–1 500 сом</option><option>1 500–5 000 сом</option><option>Более 5 000 сом</option></select></label><label class="wide">Что нужно сделать?<textarea id="details" maxlength="2000" placeholder="Опиши идею, сроки и пожелания"></textarea></label><div class="wide"><button class="btn" id="sendOrder" type="submit">Отправить заявку в Telegram</button><button class="btn" id="copy" type="button" hidden style="margin-left:8px">Скопировать текст</button><p id="result" class="muted" role="status" aria-live="polite"></p></div></form><p class="note">После отправки заявка поступит владельцу Zyro AI в Telegram. Токен бота хранится на сервере и не публикуется на сайте.</p></section>
-<footer class="foot">© Zyro AI Studio · AI-инструменты и цифровые услуги <span style="float:right"><a href="index.html">Вернуться в чат ↑</a></span></footer></div>
+*{box-sizing:border-box}
+body{margin:0;background:#070a18;color:#f5f7ff;font:16px Inter,system-ui,Arial,sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1050px;margin:auto;padding:24px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.logo{font-weight:850;letter-spacing:.5px;display:inline-flex;align-items:center;gap:10px}
+.btn{display:inline-block;border:1px solid #6557df;background:linear-gradient(110deg,#7b2be0,#1675e8);color:white;border-radius:11px;padding:12px 17px;cursor:pointer;font:inherit}
+.btn:disabled{opacity:.6;cursor:wait}
+.hero{padding:62px 0 36px;text-align:center}
+.tag{color:#a99bff;font-size:13px;letter-spacing:2px}
+.hero h1{font-size:clamp(34px,7vw,66px);line-height:1.05;margin:16px 0}
+.hero h1 span{color:#a78bfa}
+.muted{color:#bac5df;line-height:1.65}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:linear-gradient(145deg,#111936,#0b1023);border:1px solid #27345d;border-radius:17px;padding:20px}
+.price{font-size:25px;font-weight:800;margin:10px 0}
+.section{margin:35px 0}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+label{font-size:13px;color:#c9d3eb}
+input,select,textarea{width:100%;display:block;margin-top:7px;background:#070d20;border:1px solid #34436e;border-radius:9px;padding:12px;color:white;font:inherit}
+textarea{min-height:110px;resize:vertical}
+.wide{grid-column:1/-1}
+.note{font-size:12px;color:#91a1c5}
+.foot{border-top:1px solid #253052;padding:20px 0;color:#91a1c5;font-size:13px}
+.topLinks{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.topLink{display:inline-flex;align-items:center;justify-content:center;padding:11px 13px;border:1px solid #35416b;border-radius:11px;background:#101831;color:#e9eaff;font-weight:700}
+.studioMark{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;color:#fff;background:linear-gradient(135deg,#8b5cf6,#ec4899,#22d3ee);box-shadow:0 8px 24px #8b5cf644}
+.studioMark svg{width:25px;height:25px}
+.studioName{color:#a78bfa}
+.status-error{color:#ffb4b4}
+.status-success{color:#8df0bd}
+@media(max-width:700px){.grid,.form{grid-template-columns:1fr}.wide{grid-column:auto}.hero{padding-top:42px}}
+@media(max-width:520px){.wrap{padding:16px}.top{align-items:flex-start;flex-direction:column}.topLinks{width:100%;justify-content:flex-start}.topLink,.top .btn{padding:10px 11px;font-size:13px}.studioMark{width:34px;height:34px;border-radius:10px}.studioMark svg{width:23px;height:23px}}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<header class="top">
+<a class="logo" href="/zyro-ai/" aria-label="Zyro AI Studio — на главную">
+<span class="studioMark" aria-hidden="true">
+<svg viewBox="0 0 48 48" focusable="false"><path d="M27.5 4 11 26h11l-2 18L37 20H25z" fill="currentColor"/></svg>
+</span>
+<span>ZYRO AI <span class="studioName">STUDIO</span></span>
+</a>
+<nav class="topLinks" aria-label="Главное меню">
+<a class="topLink" href="/zyro-ai/business.html#order">Заявка</a>
+<a class="btn" href="/zyro-ai/">Открыть AI-чат</a>
+</nav>
+</header>
+
+<section class="hero">
+<div class="tag">AI-СТУДИЯ ДЛЯ ТВОИХ ИДЕЙ</div>
+<h1>Идеи превращаются<br>в <span>цифровые продукты</span></h1>
+<p class="muted">Создаём сайты, AI-изображения и помогаем с программированием.<br>Для авторов, начинающих проектов и малого бизнеса.</p>
+<a class="btn" href="#order">Обсудить проект →</a>
+</section>
+
+<section class="section">
+<h2>Услуги</h2>
+<div class="grid">
+<article class="card">
+<h3>⌘ Создание сайтов</h3>
+<p class="muted">Лендинги, портфолио и сайты услуг с адаптацией под телефон.</p>
+<button class="btn" type="button" onclick="choose('Создание сайта')">Выбрать услугу</button>
+</article>
+<article class="card">
+<h3>✧ AI-изображения</h3>
+<p class="muted">Иллюстрации, обложки и визуальные идеи для контента.</p>
+<button class="btn" type="button" onclick="choose('AI-изображения')">Выбрать услугу</button>
+</article>
+<article class="card">
+<h3>⌁ Помощь с кодом</h3>
+<p class="muted">HTML, CSS, JavaScript, разбор ошибок и запуск проекта.</p>
+<button class="btn" type="button" onclick="choose('Помощь с программированием')">Выбрать услугу</button>
+</article>
+</div>
+</section>
+
+<section class="section">
+<h2>Понятные стартовые цены</h2>
+<div class="grid">
+<article class="card">
+<h3>Free AI</h3><div class="price">0 сом</div>
+<p class="muted">Для вопросов, идей и знакомства с Zyro AI.</p>
+<a class="btn" href="index.html">Попробовать</a>
+</article>
+<article class="card">
+<h3>Стартовый сайт</h3><div class="price">от 1 500 сом</div>
+<p class="muted">Простая страница для проекта, услуги или портфолио.</p>
+<button class="btn" type="button" onclick="choose('Стартовый сайт')">Оставить заявку</button>
+</article>
+<article class="card">
+<h3>AI-контент</h3><div class="price">от 300 сом</div>
+<p class="muted">Пакет визуальных материалов по согласованному заданию.</p>
+<button class="btn" type="button" onclick="choose('AI-контент')">Оставить заявку</button>
+</article>
+</div>
+<p class="note">Цены указаны ориентировочно в сомах. Точная стоимость, сроки и состав работ согласуются до начала заказа. Онлайн-оплата пока не подключена.</p>
+</section>
+
+<section class="section card" id="order">
+<h2>Заявка на проект</h2>
+<p class="muted">Заполни форму. Заявка будет отправлена владельцу Zyro AI в Telegram.</p>
+
+<form id="orderForm" class="form">
+<div class="wide">
+<div id="zyroTurnstile" style="margin:8px 0;min-height:1px"></div>
+</div>
+
+<label>Имя
+<input id="name" required maxlength="100" autocomplete="name" placeholder="Как к тебе обращаться?">
+</label>
+
+<label>Контакт для ответа
+<input id="contact" required maxlength="160" autocomplete="email" placeholder="Telegram, email или телефон">
+</label>
+
+<label>Услуга
+<select id="service">
+<option>Создание сайта</option>
+<option>AI-изображения</option>
+<option>Помощь с программированием</option>
+<option>Стартовый сайт</option>
+<option>AI-контент</option>
+<option>Другое</option>
+</select>
+</label>
+
+<label>Бюджет
+<select id="budget">
+<option>Пока не знаю</option>
+<option>До 500 сом</option>
+<option>500–1 500 сом</option>
+<option>1 500–5 000 сом</option>
+<option>Более 5 000 сом</option>
+</select>
+</label>
+
+<label class="wide">Что нужно сделать?
+<textarea id="details" maxlength="1500" placeholder="Опиши идею, сроки и пожелания"></textarea>
+</label>
+
+<div class="wide">
+<button class="btn" id="sendOrder" type="submit">Отправить заявку в Telegram</button>
+<button class="btn" id="copy" type="button" hidden style="margin-left:8px">Скопировать текст</button>
+<p id="result" class="muted" role="status" aria-live="polite"></p>
+</div>
+</form>
+
+<p class="note">Для защиты заявки используется Cloudflare Turnstile. Токен бота хранится на сервере, а не на сайте.</p>
+</section>
+
+<footer class="foot">
+© Zyro AI Studio · AI-инструменты и цифровые услуги
+<span style="float:right"><a href="index.html">Вернуться в чат ↑</a></span>
+</footer>
+</div>
+
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <script>
+"use strict";
 
-const ZYRO_TURNSTILE_SITE_KEY = "0x4AAAAAAFbUU94-IbQQ16z1";
-let zyroTurnstileWidgetId = null;
-let zyroTurnstilePromise = null;
-function zyroTurnstileReady(){
-  return new Promise((resolve,reject)=>{
-    const started=Date.now();
-    const poll=()=>{
-      if(window.turnstile){resolve();return}
-      if(Date.now()-started>15000){reject(new Error("CAPTCHA не загрузилась. Обнови страницу."));return}
-      setTimeout(poll,150);
-    };
-    poll();
+const TURNSTILE_SITE_KEY = "0x4AAAAAAFbUU94-IbQQ16z1";
+const LEAD_ENDPOINT = "https://restless-recipe-f74f.maksimcodify20.workers.dev/lead";
+
+let widgetId = null;
+let orderText = "";
+
+const form = document.getElementById("orderForm");
+const resultEl = document.getElementById("result");
+const sendButton = document.getElementById("sendOrder");
+const copyButton = document.getElementById("copy");
+
+function choose(service) {
+  document.getElementById("service").value = service;
+  document.getElementById("order").scrollIntoView({behavior:"smooth"});
+}
+
+function waitForTurnstile() {
+  return new Promise((resolve, reject) => {
+    const started = Date.now();
+
+    function check() {
+      if (window.turnstile) {
+        resolve();
+        return;
+      }
+
+      if (Date.now() - started > 20000) {
+        reject(new Error("CAPTCHA не загрузилась. Обнови страницу и попробуй снова."));
+        return;
+      }
+
+      setTimeout(check, 150);
+    }
+
+    check();
   });
 }
-async function zyroTurnstileToken(){
-  await zyroTurnstileReady();
-  const holder=document.getElementById("zyroTurnstile");
-  if(!holder) throw new Error("Не найден блок CAPTCHA.");
-  if(zyroTurnstileWidgetId===null){
-    zyroTurnstileWidgetId=window.turnstile.render(holder,{
-      sitekey:ZYRO_TURNSTILE_SITE_KEY,
-      execution:"execute",
-      appearance:"interaction-only",
-      callback:()=>{},
-      "error-callback":()=>{},
-      "expired-callback":()=>{}
+
+async function getCaptchaToken() {
+  await waitForTurnstile();
+
+  const holder = document.getElementById("zyroTurnstile");
+
+  if (!holder) {
+    throw new Error("Не найден блок CAPTCHA.");
+  }
+
+  if (widgetId === null) {
+    widgetId = window.turnstile.render(holder, {
+      sitekey: TURNSTILE_SITE_KEY,
+      execution: "execute",
+      appearance: "interaction-only",
+      callback: function () {},
+      "error-callback": function () {},
+      "expired-callback": function () {}
     });
   }
-  return new Promise((resolve,reject)=>{
-    let finished=false;
-    const timeout=setTimeout(()=>{
-      if(!finished){finished=true;reject(new Error("CAPTCHA не завершена. Попробуй ещё раз."))}
-    },120000);
-    try{
-      window.turnstile.reset(zyroTurnstileWidgetId);
-      window.turnstile.execute(zyroTurnstileWidgetId);
-      const original=window.turnstile.getResponse;
-      const started=Date.now();
-      const poll=()=>{
-        if(finished)return;
-        const token=window.turnstile.getResponse(zyroTurnstileWidgetId);
-        if(token){
-          finished=true;clearTimeout(timeout);resolve(token);return;
+
+  if (widgetId === undefined || widgetId === null) {
+    throw new Error("Не удалось запустить CAPTCHA.");
+  }
+
+  window.turnstile.reset(widgetId);
+
+  return new Promise((resolve, reject) => {
+    let finished = false;
+
+    const timeout = setTimeout(() => {
+      finish(new Error("CAPTCHA не завершена. Попробуй ещё раз."));
+    }, 120000);
+
+    function finish(error, token) {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+
+      if (error) reject(error);
+      else resolve(token);
+    }
+
+    try {
+      // Получаем токен непосредственно из callback Turnstile.
+      window.turnstile.reset(widgetId);
+
+      // Для execute-режима вызов запускает проверку.
+      window.turnstile.execute(widgetId);
+
+      const started = Date.now();
+
+      function pollToken() {
+        if (finished) return;
+
+        let token = "";
+
+        try {
+          token = window.turnstile.getResponse(widgetId) || "";
+        } catch (_) {}
+
+        if (token) {
+          finish(null, token);
+          return;
         }
-        if(Date.now()-started>120000){
-          finished=true;clearTimeout(timeout);reject(new Error("CAPTCHA не завершена."));return;
+
+        if (Date.now() - started > 120000) {
+          finish(new Error("CAPTCHA не завершена. Попробуй ещё раз."));
+          return;
         }
-        setTimeout(poll,200);
-      };
-      poll();
-    }catch(error){
-      finished=true;clearTimeout(timeout);reject(error);
+
+        setTimeout(pollToken, 200);
+      }
+
+      pollToken();
+    } catch (_) {
+      finish(new Error("Не удалось выполнить CAPTCHA. Обнови страницу."));
     }
   });
 }
-function zyroTurnstileReset(){
-  try{if(window.turnstile && zyroTurnstileWidgetId!==null)window.turnstile.reset(zyroTurnstileWidgetId)}catch{}
+
+function resetCaptcha() {
+  try {
+    if (window.turnstile && widgetId !== null) {
+      window.turnstile.reset(widgetId);
+    }
+  } catch (_) {}
 }
 
-const TELEGRAM_LEAD_ENDPOINT="https://restless-recipe-f74f.maksimcodify20.workers.dev/lead";
-function choose(s){document.getElementById("service").value=s;document.getElementById("order").scrollIntoView({behavior:"smooth"})}
-let orderText="";
-const orderForm=document.getElementById("orderForm");
-const resultEl=document.getElementById("result");
-const sendButton=document.getElementById("sendOrder");
-orderForm.addEventListener("submit",async function(e){
-  e.preventDefault();
-  const val=id=>document.getElementById(id).value.trim();
-  const order={
-    name:val("name"),
-    contact:val("contact"),
-    service:val("service"),
-    budget:val("budget"),
-    details:val("details")
+function clean(value) {
+  return String(value || "").trim();
+}
+
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  if (sendButton.disabled) return;
+
+  const order = {
+    name: clean(document.getElementById("name").value),
+    contact: clean(document.getElementById("contact").value),
+    service: clean(document.getElementById("service").value),
+    budget: clean(document.getElementById("budget").value),
+    details: clean(document.getElementById("details").value)
   };
-  orderText="ЗАЯВКА ZYRO AI STUDIO\nИмя: "+order.name+"\nКонтакт: "+order.contact+"\nУслуга: "+order.service+"\nБюджет: "+order.budget+"\nОписание: "+(order.details||"Не указано");
-  sendButton.disabled=true;
-  sendButton.textContent="Отправка...";
-  resultEl.textContent="Отправляем заявку...";
-  document.getElementById("copy").hidden=true;
-  try{
-    const captchaToken=await zyroTurnstileToken();
-    let response;
-    try{
-      response=await fetch(TELEGRAM_LEAD_ENDPOINT,{
-        method:"POST",
-        headers:{"Content-Type":"application/json","X-Turnstile-Token":captchaToken},
-        body:JSON.stringify(order)
-      });
-    }finally{zyroTurnstileReset()}
-    let data={};
-    try{data=await response.json()}catch{}
-    if(!response.ok||data.success===false||data.error){
-      throw new Error(data.error||"Сервер не принял заявку ("+response.status+").");
+
+  if (!order.name || !order.contact || !order.service) {
+    resultEl.textContent = "Заполни имя, контакт и услугу.";
+    resultEl.className = "muted status-error";
+    return;
+  }
+
+  orderText =
+    "ЗАЯВКА ZYRO AI STUDIO\n" +
+    "Имя: " + order.name + "\n" +
+    "Контакт: " + order.contact + "\n" +
+    "Услуга: " + order.service + "\n" +
+    "Бюджет: " + order.budget + "\n" +
+    "Описание: " + (order.details || "Не указано");
+
+  sendButton.disabled = true;
+  sendButton.textContent = "Отправка...";
+  copyButton.hidden = true;
+  resultEl.className = "muted";
+  resultEl.textContent = "Проверяем CAPTCHA...";
+
+  try {
+    const token = await getCaptchaToken();
+
+    // Передаём токен сразу в нескольких распространённых форматах,
+    // чтобы Worker мог прочитать его из тела запроса или заголовка.
+    const payload = {
+      ...order,
+      turnstileToken: token,
+      captcha_token: token,
+      captchaToken: token,
+      "cf-turnstile-response": token
+    };
+
+    const response = await fetch(LEAD_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Turnstile-Token": token,
+        "X-Captcha-Token": token
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.success === false || data.error) {
+      throw new Error(
+        data.error || "Сервер не принял заявку (" + response.status + ")."
+      );
     }
-    resultEl.textContent="✅ Заявка отправлена! Если Telegram-бот настроен на сервере, владелец получит её в Telegram.";
-    orderForm.reset();
-  }catch(err){
-    resultEl.textContent="Не удалось отправить автоматически: "+(err.message||"ошибка соединения")+". Можно скопировать заявку и отправить её вручную.";
-    document.getElementById("copy").hidden=false;
-  }finally{
-    sendButton.disabled=false;
-    sendButton.textContent="Отправить заявку в Telegram";
+
+    resultEl.textContent = "✅ Сервер принял заявку.";
+    resultEl.className = "muted status-success";
+    form.reset();
+  } catch (error) {
+    resultEl.textContent =
+      "Не удалось отправить заявку: " +
+      (error.message || "ошибка соединения") +
+      ". Можно скопировать текст и отправить вручную.";
+    resultEl.className = "muted status-error";
+    copyButton.hidden = false;
+  } finally {
+    resetCaptcha();
+    sendButton.disabled = false;
+    sendButton.textContent = "Отправить заявку в Telegram";
   }
 });
-document.getElementById("copy").addEventListener("click",async function(){
-  try{await navigator.clipboard.writeText(orderText);resultEl.textContent="Текст заявки скопирован. Теперь отправь его владельцу Zyro AI в Telegram."}
-  catch(e){window.prompt("Скопируй заявку:",orderText)}
+
+copyButton.addEventListener("click", async function () {
+  try {
+    await navigator.clipboard.writeText(orderText);
+    resultEl.textContent =
+      "Текст заявки скопирован. Отправь его владельцу Zyro AI в Telegram.";
+  } catch (_) {
+    window.prompt("Скопируй заявку:", orderText);
+  }
 });
-</script></body></html>
+</script>
+</body>
+</html>
