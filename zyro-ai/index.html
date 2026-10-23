@@ -560,13 +560,17 @@ document.getElementById("authForgot").addEventListener("click",async()=>{
   if(!email){status.textContent="Сначала введи свой email.";document.getElementById("authEmail").focus();return}
   if(!supabaseReady()){status.textContent="Supabase не настроен.";return}
   const button=document.getElementById("authForgot");
-  button.disabled=true;status.textContent="Отправляем письмо для восстановления...";
+  button.disabled=true;status.textContent="Пройди проверку безопасности, затем отправим письмо...";
   try{
-    const {error}=await zyroSupabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    const captchaToken=await zyroHcaptchaToken();
+    const {error}=await zyroSupabase.auth.resetPasswordForEmail(email,{
+      redirectTo:window.location.origin+window.location.pathname,
+      captchaToken
+    });
     if(error) throw error;
     status.textContent="Если аккаунт существует, письмо для восстановления отправлено. Проверь «Входящие», «Спам» и «Промоакции».";
   }catch(error){status.textContent="Ошибка отправки: "+(error.message||"проверь настройки Supabase Redirect URLs и SMTP");}
-  finally{button.disabled=false;}
+  finally{button.disabled=false;zyroHcaptchaReset();}
 });
 async function zyroSignOut(){
   zyroOtpSent=false;
