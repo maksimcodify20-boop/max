@@ -31,7 +31,9 @@
   <div class="authTop"><div><div class="authTitle" id="authHeading">Аккаунт Zyro AI</div><div class="authMuted" style="margin-bottom:0">Войди, чтобы управлять своим аккаунтом и тарифом.</div></div><button class="authClose" onclick="closeAccount()" aria-label="Закрыть">×</button></div>
   <div id="authLoggedOut">
    <div class="authTabs"><button id="loginTab" class="authTab active" onclick="setAuthMode('login')">Вход</button><button id="signupTab" class="authTab" onclick="setAuthMode('signup')">Регистрация</button></div>
-   <form id="authForm">\n    <div id="zyroTurnstile" style="margin:14px 0;min-height:1px"></div>
+<form id="authForm">
+    <div id="zyroHcaptcha" style="margin:14px 0;min-height:78px"></div>
+    <div id="zyroTurnstile" style="margin:14px 0;min-height:1px"></div>
     <label for="authEmail">Электронная почта</label><input class="authField" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
     <label for="authPassword">Пароль</label><input class="authField" id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Не менее 6 символов" required>
     <button class="authPrimary" id="authSubmit" type="submit">Войти</button>
@@ -302,8 +304,7 @@ loadChats();input.focus();
   });
 })();
 </script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
 <script>
 /*
  * Zyro AI Auth setup:
@@ -366,7 +367,97 @@ async function zyroTurnstileToken(){
     }
   });
 }
-function zyroTurnstileReset(){
+function zyroTurnstileReset(const ZYRO_HCAPTCHA_SITE_KEY = "306c5d5e-0316-4870-9bfa-963cf4b474a2";
+
+let zyroHcaptchaWidgetId = null;
+let zyroHcaptchaPending = null;
+
+function zyroHcaptchaReady() {
+  return new Promise((resolve, reject) => {
+    const started = Date.now();
+
+    const poll = () => {
+      if (window.hcaptcha) return resolve();
+
+      if (Date.now() - started > 15000) {
+        return reject(new Error("hCaptcha не загрузилась. Обнови страницу."));
+      }
+
+      setTimeout(poll, 150);
+    };
+
+    poll();
+  });
+}
+
+async function zyroHcaptchaToken() {
+  await zyroHcaptchaReady();
+
+  const holder = document.getElementById("zyroHcaptcha");
+  if (!holder) throw new Error("Не найден блок hCaptcha.");
+
+  return new Promise((resolve, reject) => {
+    let finished = false;
+
+    const finish = (error, token) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      zyroHcaptchaPending = null;
+
+      if (error) reject(error);
+      else resolve(token);
+    };
+
+    const timeout = setTimeout(() => {
+      finish(new Error("Пройди проверку hCaptcha и попробуй снова."));
+    }, 120000);
+
+    zyroHcaptchaPending = {
+      resolve: token => finish(null, token),
+      reject: error => finish(error)
+    };
+
+    try {
+      if (zyroHcaptchaWidgetId === null) {
+        zyroHcaptchaWidgetId = window.hcaptcha.render(holder, {
+          sitekey: ZYRO_HCAPTCHA_SITE_KEY,
+          callback: token => {
+            zyroHcaptchaPending?.resolve(token);
+          },
+          "expired-callback": () => {
+            zyroHcaptchaPending?.reject(
+              new Error("Проверка hCaptcha истекла. Попробуй снова.")
+            );
+          },
+          "error-callback": () => {
+            zyroHcaptchaPending?.reject(
+              new Error("Не удалось проверить hCaptcha. Обнови страницу.")
+            );
+          }
+        });
+      } else {
+        const existingToken = window.hcaptcha.getResponse(
+          zyroHcaptchaWidgetId
+        );
+
+        if (existingToken) {
+          finish(null, existingToken);
+        }
+      }
+    } catch (error) {
+      finish(error);
+    }
+  });
+}
+
+function zyroHcaptchaReset() {
+  try {
+    if (window.hcaptcha && zyroHcaptchaWidgetId !== null) {
+      window.hcaptcha.reset(zyroHcaptchaWidgetId);
+    }
+  } catch {}
+}){
   try{if(window.turnstile && zyroTurnstileWidgetId!==null)window.turnstile.reset(zyroTurnstileWidgetId)}catch{}
 }
 
@@ -453,7 +544,7 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
   button.disabled=true;status.textContent="";
   let captchaToken="";
   try{
-    captchaToken=await zyroTurnstileToken();
+    captchaToken=await zyroHcaptchaToken();
     let result;
     if(zyroAuthMode==="signup"){
       if(password.length<6) throw new Error("Пароль должен содержать минимум 6 символов.");
@@ -472,7 +563,10 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
     else if(/user already registered/i.test(message)) status.textContent="Аккаунт уже существует. Перейди во вкладку «Вход» или восстанови пароль.";
     else if(/signup_disabled|signups not allowed/i.test(message+" "+codeName)) status.textContent="Регистрация отключена в Supabase. Включи разрешение на регистрацию в настройках Auth.";
     else status.textContent=message||"Не удалось выполнить запрос. Проверь подключение.";
-  }finally{button.disabled=false;}
+  }finally{
+  button.disabled=false;
+  zyroHcaptchaReset();
+}
 });
 document.getElementById("authForgot").addEventListener("click",async()=>{
   const status=document.getElementById("authStatus");
