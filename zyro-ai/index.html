@@ -582,9 +582,13 @@ function goToZyroStudio(){
   window.location.href="/zyro-ai/";
 }
 function showPlanInfo(plan){
-  const s=document.getElementById("planStatus");
-  if(plan==="Free") s.textContent="Тариф Free выбран. Серверные лимиты заработают после обновления Cloudflare Worker.";
-  else s.textContent=plan+" пока отображается как будущий тариф. Оплата ещё не подключена, поэтому перейти на него и получить расширенные лимиты нельзя.";
+  if(plan==="Free"){
+    const status=document.getElementById("planStatus");
+    if(status) status.textContent="Тариф Free выбран.";
+    closeAccount();
+    return;
+  }
+  goToZyroStudio();
 }
 async function zyroAuthHeaders(forceRefresh=false){
   const headers={"Content-Type":"application/json"};
