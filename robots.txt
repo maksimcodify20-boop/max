@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://zyro-ai.pages.dev/zyro-ai/sitemap.xml
 Sitemap: https://zyro-ai.pages.dev/zyro-ai/sitemap-google.xml
